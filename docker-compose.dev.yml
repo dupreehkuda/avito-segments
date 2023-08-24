@@ -3,6 +3,7 @@ version: '3.4'
 services:
   segment-service:
     build: .
+    command: -c ./config.dev.yml
     container_name: segment-service
     env_file: .env
     ports:

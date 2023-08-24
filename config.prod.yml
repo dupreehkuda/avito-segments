@@ -1,0 +1,13 @@
+common:
+  logger: prod
+conn:
+  host: 1145267-cv99614.tw1.ru
+  port: 80
+database:
+  host: segment-data
+  port: 5432
+  username: user
+  password: pswd
+  name: segment-data
+  settings: ?pool_max_conns=10
+  migrationPath: ./migration/000001_init_mg.up.sql

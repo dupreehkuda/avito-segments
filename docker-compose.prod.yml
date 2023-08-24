@@ -1,0 +1,28 @@
+version: '3.4'
+
+services:
+  segment-service:
+    image: ghcr.io/dupreehkuda/segment-service-prod:latest
+    command: -c ./config.prod.yml
+    container_name: segment-service
+    ports:
+      - '80:80'
+    restart: always
+    volumes:
+      - .:/segment_service
+    depends_on:
+      segment-data:
+        condition: service_started
+
+  segment-data:
+    image: postgres:latest
+    container_name: segment-data
+    restart: on-failure
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+    ports:
+      - '5432:5432'

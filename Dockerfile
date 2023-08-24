@@ -15,4 +15,4 @@ WORKDIR /build
 
 COPY --from=builder /build /build
 
-CMD ./build
+ENTRYPOINT ["./build"]
