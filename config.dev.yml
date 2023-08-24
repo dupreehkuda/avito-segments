@@ -2,7 +2,7 @@ common:
   logger: debug
 conn:
   host: localhost
-  port: 8080
+  port: :8080
 database:
   host: segment-data
   port: 5432

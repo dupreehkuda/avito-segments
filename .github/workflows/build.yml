@@ -5,12 +5,6 @@ on:
     workflows: [lint, test]
     types:
       - completed
-  push:
-    branches:
-      - main
-    paths:
-      - cmd/**
-      - internal/**
 
 jobs:
   build-and-push:

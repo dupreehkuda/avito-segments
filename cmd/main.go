@@ -6,8 +6,11 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/dupreehkuda/avito-segments/internal/config"
+	"github.com/dupreehkuda/avito-segments/internal/handlers"
 	"github.com/dupreehkuda/avito-segments/internal/logger"
 	"github.com/dupreehkuda/avito-segments/internal/repository"
+	"github.com/dupreehkuda/avito-segments/internal/server"
+	"github.com/dupreehkuda/avito-segments/internal/service"
 )
 
 func main() {
@@ -17,7 +20,18 @@ func main() {
 		}),
 		fx.Provide(config.New),
 		fx.Provide(logger.New),
-		fx.Provide(repository.New),
-		fx.Invoke(func(*repository.Repository) {}),
+		fx.Provide(fx.Annotate(
+			repository.New,
+			fx.As(new(service.Repository)),
+		)),
+		fx.Provide(fx.Annotate(
+			service.New,
+			fx.As(new(handlers.Service)),
+		)),
+		fx.Provide(fx.Annotate(
+			handlers.New,
+			fx.As(new(server.Handlers)),
+		)),
+		fx.Invoke(server.RegisterServer),
 	).Run()
 }

@@ -1,6 +1,13 @@
 name: lint
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - cmd/**
+      - internal/**
+  pull_request:
 
 jobs:
   lint:
@@ -25,4 +32,4 @@ jobs:
         uses: golangci/golangci-lint-action@v3
         with:
           version: latest
-          args: --timeout=4m -v
+          args: --timeout=3m -v
