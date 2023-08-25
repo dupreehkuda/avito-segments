@@ -13,6 +13,7 @@ import (
 type Repository interface {
 	AddSegment(ctx context.Context, segment models.Segment) error
 	DeleteSegment(ctx context.Context, tag string) error
+	GetSegment(ctx context.Context, tag string) (*models.Segment, error)
 }
 
 // Service provides service's business-logic

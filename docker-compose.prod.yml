@@ -3,7 +3,7 @@ version: '3.4'
 services:
   segment-service:
     image: ghcr.io/dupreehkuda/segment-service-prod:latest
-    command: -c ./config.prod.yml
+    command: -c ./configs/config.prod.yml
     container_name: segment-service
     ports:
       - '80:80'

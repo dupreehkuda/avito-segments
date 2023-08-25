@@ -62,3 +62,18 @@ func (mr *MockRepositoryMockRecorder) DeleteSegment(ctx, tag interface{}) *gomoc
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSegment", reflect.TypeOf((*MockRepository)(nil).DeleteSegment), ctx, tag)
 }
+
+// GetSegment mocks base method.
+func (m *MockRepository) GetSegment(ctx context.Context, tag string) (*models.Segment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSegment", ctx, tag)
+	ret0, _ := ret[0].(*models.Segment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSegment indicates an expected call of GetSegment.
+func (mr *MockRepositoryMockRecorder) GetSegment(ctx, tag interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSegment", reflect.TypeOf((*MockRepository)(nil).GetSegment), ctx, tag)
+}

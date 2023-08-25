@@ -29,3 +29,14 @@ func (r *Repository) DeleteSegment(ctx context.Context, tag string) error {
 
 	return nil
 }
+
+func (r *Repository) GetSegment(ctx context.Context, tag string) (*models.Segment, error) {
+	conn, err := r.pool.Acquire(ctx)
+	if err != nil {
+		r.logger.Error("Error while acquiring connection", zap.Error(err))
+		return nil, err
+	}
+	defer conn.Release()
+
+	return nil, nil
+}

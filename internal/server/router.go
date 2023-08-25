@@ -14,6 +14,9 @@ type Handlers interface {
 func (a *Api) handler(logger *zap.Logger) *echo.Echo {
 	e := echo.New()
 
+	e.HideBanner = true
+	e.HidePort = true
+
 	e.Use(middleware.Gzip())
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{

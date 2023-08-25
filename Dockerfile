@@ -7,7 +7,7 @@ COPY . .
 ARG LDFLAGS
 RUN CGO_ENABLED=0 GOOS=linux go build \
     -ldflags "$LDFLAGS" \
-    -v -o ./build ./cmd/main.go
+    -v -o ./build ./cmd/app/main.go
 
 FROM alpine
 
