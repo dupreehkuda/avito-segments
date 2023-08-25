@@ -5,6 +5,7 @@
 package handlers
 
 import (
+	context "context"
 	reflect "reflect"
 
 	models "github.com/dupreehkuda/avito-segments/internal/models"
@@ -35,29 +36,29 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // AddSegment mocks base method.
-func (m *MockService) AddSegment(segment models.Segment) error {
+func (m *MockService) AddSegment(ctx context.Context, segment models.Segment) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddSegment", segment)
+	ret := m.ctrl.Call(m, "AddSegment", ctx, segment)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // AddSegment indicates an expected call of AddSegment.
-func (mr *MockServiceMockRecorder) AddSegment(segment interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) AddSegment(ctx, segment interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddSegment", reflect.TypeOf((*MockService)(nil).AddSegment), segment)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddSegment", reflect.TypeOf((*MockService)(nil).AddSegment), ctx, segment)
 }
 
 // DeleteSegment mocks base method.
-func (m *MockService) DeleteSegment(tag string) error {
+func (m *MockService) DeleteSegment(ctx context.Context, tag string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteSegment", tag)
+	ret := m.ctrl.Call(m, "DeleteSegment", ctx, tag)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // DeleteSegment indicates an expected call of DeleteSegment.
-func (mr *MockServiceMockRecorder) DeleteSegment(tag interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) DeleteSegment(ctx, tag interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSegment", reflect.TypeOf((*MockService)(nil).DeleteSegment), tag)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSegment", reflect.TypeOf((*MockService)(nil).DeleteSegment), ctx, tag)
 }

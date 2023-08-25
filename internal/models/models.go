@@ -5,12 +5,12 @@ package models
 type (
 	Segment struct {
 		Tag         string `json:"tag"`
-		Description string `json:"description"`
+		Description string `json:"description,omitempty"`
 	}
 
 	UserSegment struct {
 		Tag    string `json:"tag"`
-		Expire string `json:"expire"`
+		Expire string `json:"expire,omitempty"`
 	}
 
 	UserRequest struct {

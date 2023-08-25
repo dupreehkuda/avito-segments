@@ -36,8 +36,8 @@ func (a *Api) handler(logger *zap.Logger) *echo.Echo {
 
 	segment := v1.Group("/segment")
 
-	segment.POST("/", a.handlers.AddSegment)
-	segment.DELETE("/", a.handlers.DeleteSegment)
+	segment.POST("", a.handlers.AddSegment)
+	segment.DELETE("/:tag", a.handlers.DeleteSegment)
 
 	user := v1.Group("/user")
 

@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"net/http"
 
 	"go.uber.org/fx"
 	"go.uber.org/zap"
@@ -23,12 +22,12 @@ func RegisterServer(lc fx.Lifecycle, handlers Handlers, config *config.Config, l
 		logger:   logger,
 	}
 
-	serv := &http.Server{Addr: config.Conn.Port, Handler: api.handler(logger)}
+	serv := api.handler(logger)
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			go func() {
-				err := serv.ListenAndServe()
+				err := serv.Start(config.Conn.Port)
 				if err != nil {
 					logger.Fatal("Cant start server", zap.Error(err))
 				}

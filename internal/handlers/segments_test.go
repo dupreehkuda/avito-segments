@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -53,6 +54,14 @@ func TestHandlers_AddSegment(t *testing.T) {
 			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
+			name: "Empty tag",
+			inputBody: models.Segment{
+				Tag: "",
+			},
+			serviceReturn:      errors.ErrInvalidSegmentTag,
+			expectedStatusCode: http.StatusBadRequest,
+		},
+		{
 			name: "Some internal error",
 			inputBody: models.Segment{
 				Tag: "NeW_TaG-1",
@@ -70,20 +79,22 @@ func TestHandlers_AddSegment(t *testing.T) {
 			defer ctrl.Finish()
 
 			service := NewMockService(ctrl)
-			service.EXPECT().AddSegment(tc.inputBody).Return(tc.serviceReturn)
+			service.EXPECT().AddSegment(context.Background(), tc.inputBody).Return(tc.serviceReturn)
 
 			zp, _ := zap.NewDevelopment()
 			server := New(service, zp)
 
-			req := httptest.NewRequest(http.MethodPost, "/api/v1/segment", bytes.NewReader(data))
+			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(data))
 			rec := httptest.NewRecorder()
 
 			e := echo.New()
+			c := e.NewContext(req, rec)
+			c.SetPath("/api/v1/segment")
 
-			err := server.AddSegment(e.NewContext(req, rec))
+			err := server.AddSegment(c)
+			e.DefaultHTTPErrorHandler(err, c)
 
-			a.Nil(err)
-			a.Equal(tc.expectedStatusCode, rec.Result().StatusCode, "Wrong status code")
+			a.Equal(tc.expectedStatusCode, rec.Code, "Wrong status code")
 		})
 	}
 }
@@ -106,6 +117,12 @@ func TestHandlers_DeleteSegment(t *testing.T) {
 		{
 			name:               "Invalid tag naming",
 			input:              "NeW_TaG-1",
+			serviceReturn:      errors.ErrInvalidSegmentTag,
+			expectedStatusCode: http.StatusBadRequest,
+		},
+		{
+			name:               "Empty tag",
+			input:              "",
 			serviceReturn:      errors.ErrInvalidSegmentTag,
 			expectedStatusCode: http.StatusBadRequest,
 		},
@@ -135,20 +152,24 @@ func TestHandlers_DeleteSegment(t *testing.T) {
 			defer ctrl.Finish()
 
 			service := NewMockService(ctrl)
-			service.EXPECT().DeleteSegment(tc.input).Return(tc.serviceReturn)
+			service.EXPECT().DeleteSegment(context.Background(), tc.input).Return(tc.serviceReturn)
 
 			zp, _ := zap.NewDevelopment()
 			server := New(service, zp)
 
-			req := httptest.NewRequest(http.MethodDelete, "/api/v1/segment/"+tc.input, nil)
+			req := httptest.NewRequest(http.MethodDelete, "/", nil)
 			rec := httptest.NewRecorder()
 
 			e := echo.New()
+			c := e.NewContext(req, rec)
+			c.SetPath("/api/v1/segment/:tag")
+			c.SetParamNames("tag")
+			c.SetParamValues(tc.input)
 
-			err := server.AddSegment(e.NewContext(req, rec))
+			err := server.DeleteSegment(c)
+			e.DefaultHTTPErrorHandler(err, c)
 
-			a.Nil(err)
-			a.Equal(tc.expectedStatusCode, rec.Result().StatusCode, "Wrong status code")
+			a.Equal(tc.expectedStatusCode, rec.Code, "Wrong status code")
 		})
 	}
 }

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"context"
+
 	"go.uber.org/zap"
 
 	"github.com/dupreehkuda/avito-segments/internal/models"
@@ -10,8 +12,8 @@ import (
 
 // Service is an interface for business-logic
 type Service interface {
-	AddSegment(segment models.Segment) error
-	DeleteSegment(tag string) error
+	AddSegment(ctx context.Context, segment models.Segment) error
+	DeleteSegment(ctx context.Context, tag string) error
 }
 
 // Handlers provide access to service

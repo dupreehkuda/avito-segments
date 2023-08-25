@@ -59,7 +59,7 @@ func easyjsonD2b7633eEncodeGithubComDupreehkudaAvitoSegmentsInternalModels(out *
 		out.RawString(prefix[1:])
 		out.String(string(in.Tag))
 	}
-	{
+	if in.Expire != "" {
 		const prefix string = ",\"expire\":"
 		out.RawString(prefix)
 		out.String(string(in.Expire))
@@ -300,7 +300,7 @@ func easyjsonD2b7633eEncodeGithubComDupreehkudaAvitoSegmentsInternalModels3(out 
 		out.RawString(prefix[1:])
 		out.String(string(in.Tag))
 	}
-	{
+	if in.Description != "" {
 		const prefix string = ",\"description\":"
 		out.RawString(prefix)
 		out.String(string(in.Description))

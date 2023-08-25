@@ -1,10 +1,14 @@
 package service
 
-import "github.com/dupreehkuda/avito-segments/internal/models"
+import (
+	"context"
 
-func (s *Service) AddSegment(segment models.Segment) error {
+	"github.com/dupreehkuda/avito-segments/internal/models"
+)
+
+func (s *Service) AddSegment(ctx context.Context, segment models.Segment) error {
 	return nil
 }
-func (s *Service) DeleteSegment(tag string) error {
+func (s *Service) DeleteSegment(ctx context.Context, tag string) error {
 	return nil
 }
