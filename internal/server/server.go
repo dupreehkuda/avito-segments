@@ -10,17 +10,20 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/config"
 )
 
-type Handlers interface {
-}
-
-type Server struct {
+type Api struct {
 	handlers Handlers
 	config   *config.Config
 	logger   *zap.Logger
 }
 
-func RegisterServer(lc fx.Lifecycle, handlers Handlers, config *config.Config, logger *zap.Logger) *Server {
-	serv := &http.Server{Addr: config.Conn.Port, Handler: handler(logger)}
+func RegisterServer(lc fx.Lifecycle, handlers Handlers, config *config.Config, logger *zap.Logger) *Api {
+	api := &Api{
+		handlers: handlers,
+		config:   config,
+		logger:   logger,
+	}
+
+	serv := &http.Server{Addr: config.Conn.Port, Handler: api.handler(logger)}
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
@@ -48,9 +51,5 @@ func RegisterServer(lc fx.Lifecycle, handlers Handlers, config *config.Config, l
 		},
 	})
 
-	return &Server{
-		handlers: handlers,
-		config:   config,
-		logger:   logger,
-	}
+	return api
 }

@@ -1,0 +1,29 @@
+name: deploy
+
+on:
+  workflow_run:
+    workflows: [build]
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    strategy:
+      matrix:
+        go-version: [ 1.19.x ]
+        platform: [ ubuntu-latest ]
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Deploy on timeweb
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.TIMEWEB_IP }}
+          username: ${{ vars.TIMEWEB_USERNAME }}
+          password: ${{ secrets.TIMEWEB_PASSWORD }}
+          script: |
+            cd avito-segments
+            make deploy

@@ -6,9 +6,16 @@ import (
 	"go.uber.org/zap"
 )
 
-func handler(logger *zap.Logger) *echo.Echo {
+type Handlers interface {
+	AddSegment(c echo.Context) error
+	DeleteSegment(c echo.Context) error
+}
+
+func (a *Api) handler(logger *zap.Logger) *echo.Echo {
 	e := echo.New()
 
+	e.Use(middleware.Gzip())
+	e.Use(middleware.Recover())
 	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
 		LogURI:    true,
 		LogStatus: true,
@@ -16,6 +23,8 @@ func handler(logger *zap.Logger) *echo.Echo {
 			logger.Info("request",
 				zap.String("URI", v.URI),
 				zap.Int("status", v.Status),
+				zap.String("remote", v.RemoteIP),
+				zap.Duration("latency", v.Latency),
 			)
 
 			return nil
@@ -27,8 +36,8 @@ func handler(logger *zap.Logger) *echo.Echo {
 
 	segment := v1.Group("/segment")
 
-	segment.POST("/", nil)
-	segment.DELETE("/", nil)
+	segment.POST("/", a.handlers.AddSegment)
+	segment.DELETE("/", a.handlers.DeleteSegment)
 
 	user := v1.Group("/user")
 
