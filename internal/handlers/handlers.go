@@ -12,8 +12,8 @@ import (
 
 // Service is an interface for business-logic
 type Service interface {
-	AddSegment(ctx context.Context, segment models.Segment) error
-	DeleteSegment(ctx context.Context, tag string) error
+	SegmentAdd(ctx context.Context, segment models.Segment) error
+	SegmentDelete(ctx context.Context, tag string) error
 }
 
 // Handlers provide access to service

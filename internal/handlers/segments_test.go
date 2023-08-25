@@ -18,7 +18,7 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
-func TestHandlers_AddSegment(t *testing.T) {
+func TestHandlers_SegmentAdd(t *testing.T) {
 	a := assert.New(t)
 
 	testCases := []struct {
@@ -79,7 +79,7 @@ func TestHandlers_AddSegment(t *testing.T) {
 			defer ctrl.Finish()
 
 			service := NewMockService(ctrl)
-			service.EXPECT().AddSegment(context.Background(), tc.inputBody).Return(tc.serviceReturn)
+			service.EXPECT().SegmentAdd(context.Background(), tc.inputBody).Return(tc.serviceReturn)
 
 			zp, _ := zap.NewDevelopment()
 			server := New(service, zp)
@@ -91,7 +91,7 @@ func TestHandlers_AddSegment(t *testing.T) {
 			c := e.NewContext(req, rec)
 			c.SetPath("/api/v1/segment")
 
-			err := server.AddSegment(c)
+			err := server.SegmentAdd(c)
 			e.DefaultHTTPErrorHandler(err, c)
 
 			a.Equal(tc.expectedStatusCode, rec.Code, "Wrong status code")
@@ -99,7 +99,7 @@ func TestHandlers_AddSegment(t *testing.T) {
 	}
 }
 
-func TestHandlers_DeleteSegment(t *testing.T) {
+func TestHandlers_SegmentDelete(t *testing.T) {
 	a := assert.New(t)
 
 	testCases := []struct {
@@ -152,7 +152,7 @@ func TestHandlers_DeleteSegment(t *testing.T) {
 			defer ctrl.Finish()
 
 			service := NewMockService(ctrl)
-			service.EXPECT().DeleteSegment(context.Background(), tc.input).Return(tc.serviceReturn)
+			service.EXPECT().SegmentDelete(context.Background(), tc.input).Return(tc.serviceReturn)
 
 			zp, _ := zap.NewDevelopment()
 			server := New(service, zp)
@@ -166,7 +166,7 @@ func TestHandlers_DeleteSegment(t *testing.T) {
 			c.SetParamNames("tag")
 			c.SetParamValues(tc.input)
 
-			err := server.DeleteSegment(c)
+			err := server.SegmentDelete(c)
 			e.DefaultHTTPErrorHandler(err, c)
 
 			a.Equal(tc.expectedStatusCode, rec.Code, "Wrong status code")

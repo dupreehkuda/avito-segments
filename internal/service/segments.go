@@ -8,17 +8,47 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
-func (s *Service) AddSegment(ctx context.Context, segment models.Segment) error {
+func (s *Service) SegmentAdd(ctx context.Context, segment models.Segment) error {
 	if !isValidTag(segment.Tag) {
 		return errors.ErrInvalidSegmentTag
+	}
+
+	seg, err := s.repository.SegmentGet(ctx, segment.Tag)
+	if err != nil {
+		return err
+	}
+
+	if seg != nil {
+		return errors.ErrDuplicateSegment
+	}
+
+	if err := s.repository.SegmentAdd(ctx, segment); err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func (s *Service) DeleteSegment(ctx context.Context, tag string) error {
+func (s *Service) SegmentDelete(ctx context.Context, tag string) error {
 	if !isValidTag(tag) {
 		return errors.ErrInvalidSegmentTag
+	}
+
+	seg, err := s.repository.SegmentGet(ctx, tag)
+	if err != nil {
+		return err
+	}
+
+	if seg == nil {
+		return errors.ErrNotFound
+	}
+
+	if seg.DeletedAt != nil {
+		return errors.ErrAlreadyDeleted
+	}
+
+	if err := s.repository.SegmentDelete(ctx, tag); err != nil {
+		return err
 	}
 
 	return nil

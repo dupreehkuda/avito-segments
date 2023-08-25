@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS segments (
                                         tag text PRIMARY KEY NOT NULL UNIQUE,
+                                        description text,
                                         created_at timestamptz NOT NULL,
                                         deleted_at timestamptz
 );

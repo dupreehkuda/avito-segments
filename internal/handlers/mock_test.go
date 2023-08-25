@@ -35,30 +35,30 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// AddSegment mocks base method.
-func (m *MockService) AddSegment(ctx context.Context, segment models.Segment) error {
+// SegmentAdd mocks base method.
+func (m *MockService) SegmentAdd(ctx context.Context, segment models.Segment) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AddSegment", ctx, segment)
+	ret := m.ctrl.Call(m, "SegmentAdd", ctx, segment)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// AddSegment indicates an expected call of AddSegment.
-func (mr *MockServiceMockRecorder) AddSegment(ctx, segment interface{}) *gomock.Call {
+// SegmentAdd indicates an expected call of SegmentAdd.
+func (mr *MockServiceMockRecorder) SegmentAdd(ctx, segment interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddSegment", reflect.TypeOf((*MockService)(nil).AddSegment), ctx, segment)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SegmentAdd", reflect.TypeOf((*MockService)(nil).SegmentAdd), ctx, segment)
 }
 
-// DeleteSegment mocks base method.
-func (m *MockService) DeleteSegment(ctx context.Context, tag string) error {
+// SegmentDelete mocks base method.
+func (m *MockService) SegmentDelete(ctx context.Context, tag string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteSegment", ctx, tag)
+	ret := m.ctrl.Call(m, "SegmentDelete", ctx, tag)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// DeleteSegment indicates an expected call of DeleteSegment.
-func (mr *MockServiceMockRecorder) DeleteSegment(ctx, tag interface{}) *gomock.Call {
+// SegmentDelete indicates an expected call of SegmentDelete.
+func (mr *MockServiceMockRecorder) SegmentDelete(ctx, tag interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSegment", reflect.TypeOf((*MockService)(nil).DeleteSegment), ctx, tag)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SegmentDelete", reflect.TypeOf((*MockService)(nil).SegmentDelete), ctx, tag)
 }

@@ -7,8 +7,8 @@ import (
 )
 
 type Handlers interface {
-	AddSegment(c echo.Context) error
-	DeleteSegment(c echo.Context) error
+	SegmentAdd(c echo.Context) error
+	SegmentDelete(c echo.Context) error
 }
 
 func (a *Api) handler(logger *zap.Logger) *echo.Echo {
@@ -39,8 +39,8 @@ func (a *Api) handler(logger *zap.Logger) *echo.Echo {
 
 	segment := v1.Group("/segment")
 
-	segment.POST("", a.handlers.AddSegment)
-	segment.DELETE("/:tag", a.handlers.DeleteSegment)
+	segment.POST("", a.handlers.SegmentAdd)
+	segment.DELETE("/:tag", a.handlers.SegmentDelete)
 
 	user := v1.Group("/user")
 

@@ -13,7 +13,7 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
-func (h Handlers) AddSegment(c echo.Context) error {
+func (h Handlers) SegmentAdd(c echo.Context) error {
 	var req models.Segment
 
 	body, err := io.ReadAll(c.Request().Body)
@@ -27,7 +27,7 @@ func (h Handlers) AddSegment(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	if err := h.service.AddSegment(c.Request().Context(), req); err != nil {
+	if err := h.service.SegmentAdd(c.Request().Context(), req); err != nil {
 		switch {
 		case errors.Is(err, errs.ErrDuplicateSegment):
 			return c.NoContent(http.StatusOK)
@@ -41,10 +41,10 @@ func (h Handlers) AddSegment(c echo.Context) error {
 	return c.NoContent(http.StatusCreated)
 }
 
-func (h Handlers) DeleteSegment(c echo.Context) error {
+func (h Handlers) SegmentDelete(c echo.Context) error {
 	tag := c.Param("tag")
 
-	if err := h.service.DeleteSegment(c.Request().Context(), tag); err != nil {
+	if err := h.service.SegmentDelete(c.Request().Context(), tag); err != nil {
 		switch {
 		case errors.Is(err, errs.ErrNotFound):
 			return echo.NewHTTPError(http.StatusNotFound, "Tag not found")

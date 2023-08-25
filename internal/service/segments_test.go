@@ -14,7 +14,7 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
-func TestService_AddSegment(t *testing.T) {
+func TestService_SegmentAdd(t *testing.T) {
 	a := assert.New(t)
 
 	testCases := []struct {
@@ -24,6 +24,8 @@ func TestService_AddSegment(t *testing.T) {
 		getSegmentError  error
 		repositoryReturn error
 		expectedReturn   error
+		expectingGet     bool
+		expectingAdd     bool
 	}{
 		{
 			name: "Segment created",
@@ -35,6 +37,8 @@ func TestService_AddSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: nil,
 			expectedReturn:   nil,
+			expectingGet:     true,
+			expectingAdd:     true,
 		},
 		{
 			name: "Invalid tag",
@@ -45,6 +49,8 @@ func TestService_AddSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: nil,
 			expectedReturn:   errors.ErrInvalidSegmentTag,
+			expectingGet:     false,
+			expectingAdd:     false,
 		},
 		{
 			name: "Empty tag",
@@ -55,6 +61,8 @@ func TestService_AddSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: nil,
 			expectedReturn:   errors.ErrInvalidSegmentTag,
+			expectingGet:     false,
+			expectingAdd:     false,
 		},
 		{
 			name: "Duplicate entry",
@@ -70,6 +78,8 @@ func TestService_AddSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: nil,
 			expectedReturn:   errors.ErrDuplicateSegment,
+			expectingGet:     true,
+			expectingAdd:     false,
 		},
 		{
 			name: "DB error checkDuplicate",
@@ -81,6 +91,8 @@ func TestService_AddSegment(t *testing.T) {
 			getSegmentError:  pgx.ErrTxCommitRollback,
 			repositoryReturn: nil,
 			expectedReturn:   pgx.ErrTxCommitRollback,
+			expectingGet:     true,
+			expectingAdd:     false,
 		},
 		{
 			name: "DB error addSegment",
@@ -92,6 +104,8 @@ func TestService_AddSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: pgx.ErrTxClosed,
 			expectedReturn:   pgx.ErrTxClosed,
+			expectingGet:     true,
+			expectingAdd:     true,
 		},
 	}
 
@@ -101,20 +115,26 @@ func TestService_AddSegment(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := NewMockRepository(ctrl)
-			repo.EXPECT().GetSegment(context.Background(), tc.inputBody.Tag).Return(tc.getSegmentReturn)
-			repo.EXPECT().AddSegment(context.Background(), tc.inputBody).Return(tc.repositoryReturn)
+
+			if tc.expectingGet {
+				repo.EXPECT().SegmentGet(context.Background(), tc.inputBody.Tag).Return(tc.getSegmentReturn, tc.getSegmentError)
+			}
+
+			if tc.expectingAdd {
+				repo.EXPECT().SegmentAdd(context.Background(), tc.inputBody).Return(tc.repositoryReturn)
+			}
 
 			zp, _ := zap.NewDevelopment()
 			service := New(repo, zp)
 
-			err := service.AddSegment(context.Background(), tc.inputBody)
+			err := service.SegmentAdd(context.Background(), tc.inputBody)
 
 			a.Equal(tc.expectedReturn, err)
 		})
 	}
 }
 
-func TestService_DeleteSegment(t *testing.T) {
+func TestService_SegmentDelete(t *testing.T) {
 	a := assert.New(t)
 
 	testCases := []struct {
@@ -124,6 +144,8 @@ func TestService_DeleteSegment(t *testing.T) {
 		getSegmentError  error
 		repositoryReturn error
 		expectedReturn   error
+		expectingGet     bool
+		expectingDelete  bool
 	}{
 		{
 			name:  "Segment deleted",
@@ -136,6 +158,8 @@ func TestService_DeleteSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: nil,
 			expectedReturn:   nil,
+			expectingGet:     true,
+			expectingDelete:  true,
 		},
 		{
 			name:             "Segment not found",
@@ -144,6 +168,8 @@ func TestService_DeleteSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: nil,
 			expectedReturn:   errors.ErrNotFound,
+			expectingGet:     true,
+			expectingDelete:  false,
 		},
 		{
 			name:  "Segment already deleted",
@@ -156,6 +182,8 @@ func TestService_DeleteSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: nil,
 			expectedReturn:   errors.ErrAlreadyDeleted,
+			expectingGet:     true,
+			expectingDelete:  false,
 		},
 		{
 			name:             "Invalid tag",
@@ -164,6 +192,8 @@ func TestService_DeleteSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: nil,
 			expectedReturn:   errors.ErrInvalidSegmentTag,
+			expectingGet:     false,
+			expectingDelete:  false,
 		},
 		{
 			name:             "Empty tag",
@@ -172,6 +202,8 @@ func TestService_DeleteSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: nil,
 			expectedReturn:   errors.ErrInvalidSegmentTag,
+			expectingGet:     false,
+			expectingDelete:  false,
 		},
 		{
 			name:             "DB error checkDuplicate",
@@ -180,6 +212,8 @@ func TestService_DeleteSegment(t *testing.T) {
 			getSegmentError:  pgx.ErrTxCommitRollback,
 			repositoryReturn: nil,
 			expectedReturn:   pgx.ErrTxCommitRollback,
+			expectingGet:     true,
+			expectingDelete:  false,
 		},
 		{
 			name:  "DB error addSegment",
@@ -192,6 +226,8 @@ func TestService_DeleteSegment(t *testing.T) {
 			getSegmentError:  nil,
 			repositoryReturn: pgx.ErrTxClosed,
 			expectedReturn:   pgx.ErrTxClosed,
+			expectingGet:     true,
+			expectingDelete:  true,
 		},
 	}
 
@@ -201,13 +237,19 @@ func TestService_DeleteSegment(t *testing.T) {
 			defer ctrl.Finish()
 
 			repo := NewMockRepository(ctrl)
-			repo.EXPECT().GetSegment(context.Background(), tc.input).Return(tc.getSegmentReturn)
-			repo.EXPECT().DeleteSegment(context.Background(), tc.input).Return(tc.repositoryReturn)
+
+			if tc.expectingGet {
+				repo.EXPECT().SegmentGet(context.Background(), tc.input).Return(tc.getSegmentReturn, tc.getSegmentError)
+			}
+
+			if tc.expectingDelete {
+				repo.EXPECT().SegmentDelete(context.Background(), tc.input).Return(tc.repositoryReturn)
+			}
 
 			zp, _ := zap.NewDevelopment()
 			service := New(repo, zp)
 
-			err := service.DeleteSegment(context.Background(), tc.input)
+			err := service.SegmentDelete(context.Background(), tc.input)
 
 			a.Equal(tc.expectedReturn, err)
 		})

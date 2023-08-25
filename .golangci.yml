@@ -1,0 +1,151 @@
+run:
+  timeout: 3m
+
+linters-settings:
+  cyclop:
+    max-complexity: 20
+    package-average: 0.1
+
+  errcheck:
+    check-type-assertions: true
+
+  exhaustive:
+    check:
+      - switch
+      - map
+
+  exhaustruct:
+    exclude:
+      - "^net/http.Client$"
+      - "^net/http.Cookie$"
+      - "^net/http.Request$"
+      - "^net/http.Response$"
+      - "^net/http.Server$"
+      - "^net/http.Transport$"
+      - "^net/url.URL$"
+      - "^os/exec.Cmd$"
+      - "^reflect.StructField$"
+      - "^github.com/Shopify/sarama.Config$"
+      - "^github.com/Shopify/sarama.ProducerMessage$"
+      - "^github.com/mitchellh/mapstructure.DecoderConfig$"
+      - "^github.com/prometheus/client_golang/.+Opts$"
+      - "^github.com/stretchr/testify/mock.Mock$"
+      - "^github.com/testcontainers/testcontainers-go.+Request$"
+      - "^github.com/testcontainers/testcontainers-go.FromDockerfile$"
+      - "^golang.org/x/tools/go/analysis.Analyzer$"
+      - "^google.golang.org/protobuf/.+Options$"
+      - "^gopkg.in/yaml.v3.Node$"
+
+  funlen:
+    lines: 100
+    statements: 50
+    ignore-comments: true
+
+  gocognit:
+    min-complexity: 20
+
+  gocritic:
+    settings:
+      captLocal:
+        paramsOnly: false
+      underef:
+        skipRecvDeref: false
+
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment
+    settings:
+      shadow:
+        strict: true
+
+  nolintlint:
+    allow-no-explanation: [ funlen, gocognit, lll ]
+    require-explanation: true
+    require-specific: true
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - cyclop
+    - dupl
+    - durationcheck
+    - errname
+    - errorlint
+    - execinquery
+    - exhaustive
+    - exportloopref
+    - forbidigo
+    - funlen
+    - gocheckcompilerdirectives
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - goimports
+    - gomnd
+    - gomoddirectives
+    - gomodguard
+    - goprintffuncname
+    - gosec
+    - lll
+    - loggercheck
+    - makezero
+    - mirror
+    - musttag
+    - nakedret
+    - nestif
+    - nilerr
+    - nilnil
+    - noctx
+    - nolintlint
+    - nonamedreturns
+    - nosprintfhostport
+    - predeclared
+    - promlinter
+    - reassign
+    - revive
+    - rowserrcheck
+    - sqlclosecheck
+    - stylecheck
+    - tenv
+    - testableexamples
+    - testpackage
+    - tparallel
+    - unconvert
+    - unparam
+    - usestdlibvars
+    - wastedassign
+    - whitespace
+
+issues:
+  max-same-issues: 25
+
+  exclude-rules:
+    - source: "(noinspection|TODO)"
+      linters: [ godot ]
+    - source: "//noinspection"
+      linters: [ gocritic ]
+    - path: "_test\\.go"
+      linters:
+        - bodyclose
+        - dupl
+        - funlen
+        - goconst
+        - gosec
+        - noctx
+        - wrapcheck

@@ -11,9 +11,9 @@ import (
 //go:generate mockgen -source=service.go -destination=mock_test.go -package=service
 
 type Repository interface {
-	AddSegment(ctx context.Context, segment models.Segment) error
-	DeleteSegment(ctx context.Context, tag string) error
-	GetSegment(ctx context.Context, tag string) (*models.Segment, error)
+	SegmentAdd(ctx context.Context, segment models.Segment) error
+	SegmentDelete(ctx context.Context, tag string) error
+	SegmentGet(ctx context.Context, tag string) (*models.Segment, error)
 }
 
 // Service provides service's business-logic
