@@ -12,13 +12,13 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/config"
 )
 
-// Repository provides a connection with database
+// Repository provides a connection with database.
 type Repository struct {
 	pool   *pgxpool.Pool
 	logger *zap.Logger
 }
 
-// New creates a new instance of the database layer and migrates it
+// New creates a new instance of the database layer and migrates it.
 func New(lc fx.Lifecycle, config *config.Config, logger *zap.Logger) *Repository {
 	uri := fmt.Sprintf(
 		"postgresql://%s:%s@%s:%s/%s%s",
@@ -35,7 +35,10 @@ func New(lc fx.Lifecycle, config *config.Config, logger *zap.Logger) *Repository
 		logger.Error("Unable to parse config", zap.Error(err))
 	}
 
-	pool := &pgxpool.Pool{}
+	var (
+		schema []byte
+		pool   *pgxpool.Pool
+	)
 
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
@@ -45,7 +48,7 @@ func New(lc fx.Lifecycle, config *config.Config, logger *zap.Logger) *Repository
 				return err
 			}
 
-			schema, err := os.ReadFile(config.Database.MigrationPath)
+			schema, err = os.ReadFile(config.Database.MigrationPath)
 			if err != nil {
 				logger.Error("Error occurred while getting migration schema", zap.Error(err))
 				return err

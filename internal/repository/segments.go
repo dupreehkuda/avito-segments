@@ -18,7 +18,7 @@ func (r *Repository) SegmentAdd(ctx context.Context, segment models.Segment) err
 	}
 	defer conn.Release()
 
-	if _, err := conn.Exec(
+	if _, err = conn.Exec(
 		ctx,
 		"INSERT INTO segments (tag, description, created_at) VALUES ($1, $2, $3)",
 		segment.Tag,
@@ -39,7 +39,7 @@ func (r *Repository) SegmentDelete(ctx context.Context, tag string) error {
 	}
 	defer conn.Release()
 
-	if _, err := conn.Exec(ctx, "UPDATE segments SET deleted_at = now() WHERE tag = $1", tag); err != nil {
+	if _, err = conn.Exec(ctx, "UPDATE segments SET deleted_at = now() WHERE tag = $1", tag); err != nil {
 		return err
 	}
 
@@ -54,7 +54,7 @@ func (r *Repository) SegmentGet(ctx context.Context, tag string) (*models.Segmen
 	}
 	defer conn.Release()
 
-	var res *models.Segment
+	res := &models.Segment{}
 
 	err = conn.QueryRow(ctx, "SELECT tag, description, deleted_at FROM segments WHERE tag = $1;", tag).
 		Scan(&res.Tag, &res.Description, &res.DeletedAt)

@@ -27,7 +27,7 @@ func (h Handlers) SegmentAdd(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	if err := h.service.SegmentAdd(c.Request().Context(), req); err != nil {
+	if err = h.service.SegmentAdd(c.Request().Context(), req); err != nil {
 		switch {
 		case errors.Is(err, errs.ErrDuplicateSegment):
 			return c.NoContent(http.StatusOK)

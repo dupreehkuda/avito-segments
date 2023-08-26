@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Service) SegmentAdd(ctx context.Context, segment models.Segment) error {
-	if !isValidTag(segment.Tag) {
+	if !IsValidTag(segment.Tag) {
 		return errors.ErrInvalidSegmentTag
 	}
 
@@ -22,7 +22,7 @@ func (s *Service) SegmentAdd(ctx context.Context, segment models.Segment) error 
 		return errors.ErrDuplicateSegment
 	}
 
-	if err := s.repository.SegmentAdd(ctx, segment); err != nil {
+	if err = s.repository.SegmentAdd(ctx, segment); err != nil {
 		return err
 	}
 
@@ -30,7 +30,7 @@ func (s *Service) SegmentAdd(ctx context.Context, segment models.Segment) error 
 }
 
 func (s *Service) SegmentDelete(ctx context.Context, tag string) error {
-	if !isValidTag(tag) {
+	if !IsValidTag(tag) {
 		return errors.ErrInvalidSegmentTag
 	}
 
@@ -47,14 +47,14 @@ func (s *Service) SegmentDelete(ctx context.Context, tag string) error {
 		return errors.ErrAlreadyDeleted
 	}
 
-	if err := s.repository.SegmentDelete(ctx, tag); err != nil {
+	if err = s.repository.SegmentDelete(ctx, tag); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func isValidTag(tag string) bool {
+func IsValidTag(tag string) bool {
 	pattern := "^[A-Z0-9_]+$"
 	regex := regexp.MustCompile(pattern)
 	return regex.MatchString(tag)

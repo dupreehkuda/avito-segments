@@ -11,7 +11,7 @@ type Handlers interface {
 	SegmentDelete(c echo.Context) error
 }
 
-func (a *Api) handler(logger *zap.Logger) *echo.Echo {
+func (a *API) handler(logger *zap.Logger) *echo.Echo {
 	e := echo.New()
 
 	e.HideBanner = true

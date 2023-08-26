@@ -8,7 +8,7 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
-//go:generate mockgen -source=service.go -destination=mock_test.go -package=service
+//go:generate mockgen -source=service.go -destination=mock_test.go -package=service_test
 
 type Repository interface {
 	SegmentAdd(ctx context.Context, segment models.Segment) error
@@ -16,16 +16,16 @@ type Repository interface {
 	SegmentGet(ctx context.Context, tag string) (*models.Segment, error)
 }
 
-// Service provides service's business-logic
+// Service provides service's business-logic.
 type Service struct {
 	repository Repository
 	logger     *zap.Logger
 }
 
-// New creates new instance of service
-func New(Repository Repository, logger *zap.Logger) *Service {
+// New creates new instance of service.
+func New(repository Repository, logger *zap.Logger) *Service {
 	return &Service{
-		repository: Repository,
+		repository: repository,
 		logger:     logger,
 	}
 }

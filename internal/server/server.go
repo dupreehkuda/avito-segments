@@ -9,14 +9,14 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/config"
 )
 
-type Api struct {
+type API struct {
 	handlers Handlers
 	config   *config.Config
 	logger   *zap.Logger
 }
 
-func RegisterServer(lc fx.Lifecycle, handlers Handlers, config *config.Config, logger *zap.Logger) *Api {
-	api := &Api{
+func RegisterServer(lc fx.Lifecycle, handlers Handlers, config *config.Config, logger *zap.Logger) *API {
+	api := &API{
 		handlers: handlers,
 		config:   config,
 		logger:   logger,

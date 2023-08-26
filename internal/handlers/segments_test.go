@@ -1,4 +1,4 @@
-package handlers
+package handlers_test
 
 import (
 	"bytes"
@@ -15,6 +15,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/dupreehkuda/avito-segments/internal/errors"
+	"github.com/dupreehkuda/avito-segments/internal/handlers"
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
@@ -82,7 +83,7 @@ func TestHandlers_SegmentAdd(t *testing.T) {
 			service.EXPECT().SegmentAdd(context.Background(), tc.inputBody).Return(tc.serviceReturn)
 
 			zp, _ := zap.NewDevelopment()
-			server := New(service, zp)
+			server := handlers.New(service, zp)
 
 			req := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(data))
 			rec := httptest.NewRecorder()
@@ -155,7 +156,7 @@ func TestHandlers_SegmentDelete(t *testing.T) {
 			service.EXPECT().SegmentDelete(context.Background(), tc.input).Return(tc.serviceReturn)
 
 			zp, _ := zap.NewDevelopment()
-			server := New(service, zp)
+			server := handlers.New(service, zp)
 
 			req := httptest.NewRequest(http.MethodDelete, "/", nil)
 			rec := httptest.NewRecorder()

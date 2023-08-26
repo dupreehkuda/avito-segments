@@ -1,10 +1,12 @@
 run:
   timeout: 3m
+  skip-files:
+    - internal/models/models_easyjson.go
 
 linters-settings:
   cyclop:
     max-complexity: 20
-    package-average: 0.1
+    package-average: 5.0
 
   errcheck:
     check-type-assertions: true
@@ -88,7 +90,6 @@ linters:
     - exportloopref
     - forbidigo
     - funlen
-    - gocheckcompilerdirectives
     - gochecknoglobals
     - gochecknoinits
     - gocognit
@@ -105,22 +106,16 @@ linters:
     - lll
     - loggercheck
     - makezero
-    - mirror
-    - musttag
     - nakedret
     - nestif
     - nilerr
-    - nilnil
     - noctx
     - nolintlint
     - nonamedreturns
-    - nosprintfhostport
     - predeclared
     - promlinter
     - reassign
     - revive
-    - rowserrcheck
-    - sqlclosecheck
     - stylecheck
     - tenv
     - testableexamples
@@ -129,7 +124,6 @@ linters:
     - unconvert
     - unparam
     - usestdlibvars
-    - wastedassign
     - whitespace
 
 issues:

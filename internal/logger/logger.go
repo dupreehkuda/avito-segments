@@ -6,16 +6,16 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/config"
 )
 
-var Logger *zap.Logger
-
-// New initializes new Logger instance
+// New initializes new Logger instance.
 func New(config *config.Config) *zap.Logger {
+	var logger *zap.Logger
+
 	switch config.Common.Logger {
 	case "debug":
-		Logger, _ = zap.NewDevelopment()
+		logger, _ = zap.NewDevelopment()
 	default:
-		Logger, _ = zap.NewProduction()
+		logger, _ = zap.NewProduction()
 	}
 
-	return Logger
+	return logger
 }

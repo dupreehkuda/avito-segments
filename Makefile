@@ -5,3 +5,7 @@ test:
 .PHONY: gen
 gen:
 	go generate ./...
+
+.PHONY: lint
+lint:
+	golangci-lint run --color=always

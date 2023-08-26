@@ -43,7 +43,7 @@ func New() *Config {
 
 	if file != nil {
 		decoder := yaml.NewDecoder(file)
-		if err := decoder.Decode(&config); err != nil {
+		if err = decoder.Decode(&config); err != nil {
 			panic(err)
 		}
 	}

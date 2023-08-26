@@ -1,4 +1,4 @@
-package service
+package service_test
 
 import (
 	"context"
@@ -12,6 +12,7 @@ import (
 
 	"github.com/dupreehkuda/avito-segments/internal/errors"
 	"github.com/dupreehkuda/avito-segments/internal/models"
+	"github.com/dupreehkuda/avito-segments/internal/service"
 )
 
 func TestService_SegmentAdd(t *testing.T) {
@@ -125,9 +126,9 @@ func TestService_SegmentAdd(t *testing.T) {
 			}
 
 			zp, _ := zap.NewDevelopment()
-			service := New(repo, zp)
+			serv := service.New(repo, zp)
 
-			err := service.SegmentAdd(context.Background(), tc.inputBody)
+			err := serv.SegmentAdd(context.Background(), tc.inputBody)
 
 			a.Equal(tc.expectedReturn, err)
 		})
@@ -247,9 +248,9 @@ func TestService_SegmentDelete(t *testing.T) {
 			}
 
 			zp, _ := zap.NewDevelopment()
-			service := New(repo, zp)
+			serv := service.New(repo, zp)
 
-			err := service.SegmentDelete(context.Background(), tc.input)
+			err := serv.SegmentDelete(context.Background(), tc.input)
 
 			a.Equal(tc.expectedReturn, err)
 		})
@@ -293,7 +294,7 @@ func Test_isValidTag(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			a.Equal(tc.want, isValidTag(tc.tag))
+			a.Equal(tc.want, service.IsValidTag(tc.tag))
 		})
 	}
 }
