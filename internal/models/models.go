@@ -25,8 +25,4 @@ type (
 		ID       string   `json:"id"`
 		Segments []string `json:"segments"`
 	}
-
-	Error struct {
-		Message string `json:"message"`
-	}
 )

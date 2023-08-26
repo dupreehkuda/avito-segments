@@ -22,7 +22,8 @@ func (h Handlers) SegmentAdd(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	if err = easyjson.Unmarshal(body, &req); err != nil {
+	err = easyjson.Unmarshal(body, &req)
+	if err != nil {
 		h.logger.Error("Unable to decode JSON", zap.Error(err))
 		return echo.NewHTTPError(http.StatusInternalServerError, "Internal Server Error")
 	}

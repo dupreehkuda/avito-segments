@@ -77,3 +77,46 @@ func (mr *MockRepositoryMockRecorder) SegmentGet(ctx, tag interface{}) *gomock.C
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SegmentGet", reflect.TypeOf((*MockRepository)(nil).SegmentGet), ctx, tag)
 }
+
+// UserDeleteSegments mocks base method.
+func (m *MockRepository) UserDeleteSegments(ctx context.Context, userID string, segments []string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UserDeleteSegments", ctx, userID, segments)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UserDeleteSegments indicates an expected call of UserDeleteSegments.
+func (mr *MockRepositoryMockRecorder) UserDeleteSegments(ctx, userID, segments interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserDeleteSegments", reflect.TypeOf((*MockRepository)(nil).UserDeleteSegments), ctx, userID, segments)
+}
+
+// UserGetSegments mocks base method.
+func (m *MockRepository) UserGetSegments(ctx context.Context, userID string) (*models.UserResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UserGetSegments", ctx, userID)
+	ret0, _ := ret[0].(*models.UserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UserGetSegments indicates an expected call of UserGetSegments.
+func (mr *MockRepositoryMockRecorder) UserGetSegments(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserGetSegments", reflect.TypeOf((*MockRepository)(nil).UserGetSegments), ctx, userID)
+}
+
+// UserSetSegments mocks base method.
+func (m *MockRepository) UserSetSegments(ctx context.Context, segments models.UserRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UserSetSegments", ctx, segments)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UserSetSegments indicates an expected call of UserSetSegments.
+func (mr *MockRepositoryMockRecorder) UserSetSegments(ctx, segments interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserSetSegments", reflect.TypeOf((*MockRepository)(nil).UserSetSegments), ctx, segments)
+}

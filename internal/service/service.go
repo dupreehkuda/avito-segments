@@ -14,6 +14,10 @@ type Repository interface {
 	SegmentAdd(ctx context.Context, segment models.Segment) error
 	SegmentDelete(ctx context.Context, tag string) error
 	SegmentGet(ctx context.Context, tag string) (*models.Segment, error)
+
+	UserSetSegments(ctx context.Context, segments models.UserRequest) error
+	UserDeleteSegments(ctx context.Context, userID string, segments []string) error
+	UserGetSegments(ctx context.Context, userID string) (*models.UserResponse, error)
 }
 
 // Service provides service's business-logic.

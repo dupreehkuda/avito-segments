@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 	"go.uber.org/zap"
 
@@ -18,13 +19,12 @@ func (r *Repository) SegmentAdd(ctx context.Context, segment models.Segment) err
 	}
 	defer conn.Release()
 
-	if _, err = conn.Exec(
-		ctx,
-		"INSERT INTO segments (tag, description, created_at) VALUES ($1, $2, $3)",
-		segment.Tag,
-		segment.Description,
-		segment.DeletedAt,
-	); err != nil {
+	queryString, queryArgs := sq.Insert("segments").Columns("tag", "description", "created_at").
+		Values(segment.Tag, segment.Description, segment.DeletedAt).
+		PlaceholderFormat(sq.Dollar).
+		MustSql()
+
+	if _, err = conn.Exec(ctx, queryString, queryArgs...); err != nil {
 		return err
 	}
 
@@ -39,7 +39,13 @@ func (r *Repository) SegmentDelete(ctx context.Context, tag string) error {
 	}
 	defer conn.Release()
 
-	if _, err = conn.Exec(ctx, "UPDATE segments SET deleted_at = now() WHERE tag = $1", tag); err != nil {
+	queryString, queryArgs := sq.Update("segments").
+		Set("deleted_at", sq.Expr("NOW()")).
+		Where(sq.Eq{"tag": tag}).
+		PlaceholderFormat(sq.Dollar).
+		MustSql()
+
+	if _, err = conn.Exec(ctx, queryString, queryArgs...); err != nil {
 		return err
 	}
 
@@ -56,7 +62,13 @@ func (r *Repository) SegmentGet(ctx context.Context, tag string) (*models.Segmen
 
 	res := &models.Segment{}
 
-	err = conn.QueryRow(ctx, "SELECT tag, description, deleted_at FROM segments WHERE tag = $1;", tag).
+	queryString, queryArgs := sq.Select("tag", "description", "deleted_at").
+		From("segments").
+		Where(sq.Eq{"tag": tag}).
+		PlaceholderFormat(sq.Dollar).
+		MustSql()
+
+	err = conn.QueryRow(ctx, queryString, queryArgs...).
 		Scan(&res.Tag, &res.Description, &res.DeletedAt)
 
 	if err != nil {

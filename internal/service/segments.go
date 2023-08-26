@@ -22,7 +22,8 @@ func (s *Service) SegmentAdd(ctx context.Context, segment models.Segment) error 
 		return errors.ErrDuplicateSegment
 	}
 
-	if err = s.repository.SegmentAdd(ctx, segment); err != nil {
+	err = s.repository.SegmentAdd(ctx, segment)
+	if err != nil {
 		return err
 	}
 
@@ -47,7 +48,8 @@ func (s *Service) SegmentDelete(ctx context.Context, tag string) error {
 		return errors.ErrAlreadyDeleted
 	}
 
-	if err = s.repository.SegmentDelete(ctx, tag); err != nil {
+	err = s.repository.SegmentDelete(ctx, tag)
+	if err != nil {
 		return err
 	}
 

@@ -21,3 +21,20 @@ CREATE TABLE IF NOT EXISTS user_segments (
 
 ALTER TABLE user_segments ADD FOREIGN KEY (tag) REFERENCES segments (tag);
 ALTER TABLE user_segments ADD FOREIGN KEY (user_id) REFERENCES users (id);
+
+CREATE OR REPLACE  FUNCTION insert_user_if_not_exists() RETURNS TRIGGER AS $$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM users WHERE id = NEW.user_id) THEN
+        INSERT INTO users (id, created_at)
+        VALUES (NEW.user_id, now());
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER insert_user
+    BEFORE INSERT ON user_segments
+    FOR EACH ROW
+EXECUTE FUNCTION insert_user_if_not_exists();
+
