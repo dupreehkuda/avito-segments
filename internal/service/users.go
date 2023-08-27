@@ -114,7 +114,7 @@ func (s *Service) CreateReport(ctx context.Context, year, month int) (string, er
 func IsValidReportTime(year, month int) bool {
 	now := time.Now()
 
-	if year <= 1971 || year >= now.Year() {
+	if year <= 1971 || year > now.Year() {
 		return false
 	}
 

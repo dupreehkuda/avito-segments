@@ -2,7 +2,7 @@ name: build
 
 on:
   workflow_run:
-    workflows: [lint, test]
+    workflows: [test]
     types:
       - completed
     branches:

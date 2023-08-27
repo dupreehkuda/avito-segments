@@ -1,0 +1,172 @@
+{
+	"info": {
+		"_postman_id": "60307e91-db25-41e3-9dd3-6717b69ccb5a",
+		"name": "avito",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "18999628"
+	},
+	"item": [
+		{
+			"name": "v1/segment",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"slug\":\"NULL_1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/segment"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/segment prod",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"slug\":\"NULL_1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://avito.1145267-cv99614.tw1.ru/api/v1/segment"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/segment",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/segment/NULL0"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/segment prod",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://avito.1145267-cv99614.tw1.ru/api/v1/segment/NULL0"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userID\":\"be4666fd-c6e8-4bec-9d1a-8826827dae07\",\n    \"segments\": [\n        {\n            \"slug\":\"NULL\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/user"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/user prod",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userID\":\"be4666fd-c6e8-4bec-9d1a-8826827dae07\",\n    \"segments\": [\n        {\n            \"slug\":\"NULL\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://avito.1145267-cv99614.tw1.ru/api/v1/user"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/user",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userID\":\"be4666fd-c6e8-4bec-9d1a-8826827dae07\",\n    \"slugs\": [\"NULL\", \"NULL_1\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8080/api/v1/user"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/user prod",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userID\":\"be4666fd-c6e8-4bec-9d1a-8826827dae07\",\n    \"slugs\": [\"NULL\", \"NULL_1\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://avito.1145267-cv99614.tw1.ru/api/v1/user"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/user/be4666fd-c6e8-4bec-9d1a-8826827dae07"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/user prod",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://avito.1145267-cv99614.tw1.ru/api/v1/user/be4666fd-c6e8-4bec-9d1a-8826827dae07"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/report",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/report"
+			},
+			"response": []
+		},
+		{
+			"name": "v1/report prod",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "http://localhost:8080/api/v1/report"
+			},
+			"response": []
+		}
+	]
+}

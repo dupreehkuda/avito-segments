@@ -153,10 +153,6 @@ func (r *Repository) GetReportData(ctx context.Context, year, month int) ([]mode
 
 	rows, err := conn.Query(ctx, query, year, month)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errs.ErrDataNotFound
-		}
-
 		r.logger.Error("Error while executing query", zap.Error(err))
 		return nil, err
 	}
@@ -173,6 +169,10 @@ func (r *Repository) GetReportData(ctx context.Context, year, month int) ([]mode
 		}
 
 		resp = append(resp, row)
+	}
+
+	if len(resp) == 0 {
+		return nil, errs.ErrDataNotFound
 	}
 
 	return resp, nil

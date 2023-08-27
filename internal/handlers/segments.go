@@ -35,7 +35,7 @@ func (h Handlers) SegmentAdd(c echo.Context) error {
 		case errors.Is(err, errs.ErrInvalidSegmentSlug):
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid slug naming")
 		default:
-			h.logger.Error("Error occurred setting segments", zap.Error(err))
+			h.logger.Error("Error occurred adding segment", zap.Error(err))
 			return err
 		}
 	}
@@ -55,6 +55,7 @@ func (h Handlers) SegmentDelete(c echo.Context) error {
 		case errors.Is(err, errs.ErrInvalidSegmentSlug):
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid slug naming")
 		default:
+			h.logger.Error("Error occurred deleting segment", zap.Error(err))
 			return err
 		}
 	}

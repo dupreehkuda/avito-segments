@@ -82,6 +82,7 @@ func (h Handlers) UserDeleteSegments(c echo.Context) error {
 		case errors.Is(err, errs.ErrInvalidSegmentSlug):
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid slug naming")
 		default:
+			h.logger.Error("Error occurred deleting segments", zap.Error(err))
 			return err
 		}
 	}
@@ -104,6 +105,7 @@ func (h Handlers) UserGetSegments(c echo.Context) error {
 		case errors.Is(err, errs.ErrUserNotFound):
 			return echo.NewHTTPError(http.StatusNotFound, "user not found")
 		default:
+			h.logger.Error("Error occurred getting segments", zap.Error(err))
 			return err
 		}
 	}
