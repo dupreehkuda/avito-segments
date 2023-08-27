@@ -51,7 +51,7 @@ func TestHandlers_UserSetSegments(t *testing.T) {
 				Segments: []models.UserSegment{
 					{
 						Slug:   "TEST_SLUG",
-						Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.Local),
+						Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.UTC),
 					},
 				},
 			},
@@ -66,7 +66,7 @@ func TestHandlers_UserSetSegments(t *testing.T) {
 				Segments: []models.UserSegment{
 					{
 						Slug:   "TEST_SLUG",
-						Expire: time.Date(2022, time.August, 26, 19, 00, 00, 00, time.Local),
+						Expire: time.Date(2022, time.August, 26, 19, 00, 00, 00, time.UTC),
 					},
 				},
 			},
@@ -95,7 +95,7 @@ func TestHandlers_UserSetSegments(t *testing.T) {
 				Segments: []models.UserSegment{
 					{
 						Slug:   "TEST_SLUG",
-						Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.Local),
+						Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.UTC),
 					},
 					{
 						Slug: "tEsT_sLUg",
@@ -113,11 +113,11 @@ func TestHandlers_UserSetSegments(t *testing.T) {
 				Segments: []models.UserSegment{
 					{
 						Slug:   "TEST_SLUG",
-						Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.Local),
+						Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.UTC),
 					},
 					{
 						Slug:   "TEST_SLUG_2",
-						Expire: time.Date(2022, time.August, 26, 19, 00, 00, 00, time.Local),
+						Expire: time.Date(2022, time.August, 26, 19, 00, 00, 00, time.UTC),
 					},
 				},
 			},
@@ -132,7 +132,7 @@ func TestHandlers_UserSetSegments(t *testing.T) {
 				Segments: []models.UserSegment{
 					{
 						Slug:   "TEST_SLUG",
-						Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.Local),
+						Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.UTC),
 					},
 				},
 			},
@@ -147,7 +147,7 @@ func TestHandlers_UserSetSegments(t *testing.T) {
 				Segments: []models.UserSegment{
 					{
 						Slug:   "TEST_SLUG",
-						Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.Local),
+						Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.UTC),
 					},
 				},
 			},
@@ -170,13 +170,15 @@ func TestHandlers_UserSetSegments(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			data, _ := easyjson.Marshal(tc.inputBody)
+			var input models.UserSetRequest
+			_ = easyjson.Unmarshal(data, &input)
 
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
 			service := NewMockService(ctrl)
 			if tc.expectingServiceCall {
-				service.EXPECT().UserSetSegments(context.Background(), tc.inputBody).Return(tc.serviceReturn)
+				service.EXPECT().UserSetSegments(context.Background(), &input).Return(tc.serviceReturn)
 			}
 
 			zp, _ := zap.NewDevelopment()
