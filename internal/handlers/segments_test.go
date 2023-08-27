@@ -3,13 +3,13 @@ package handlers_test
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
 
 	"github.com/labstack/echo/v4"
+	"github.com/mailru/easyjson"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"go.uber.org/zap"
@@ -24,48 +24,48 @@ func TestHandlers_SegmentAdd(t *testing.T) {
 
 	testCases := []struct {
 		name               string
-		inputBody          models.Segment
+		inputBody          *models.Segment
 		serviceReturn      error
 		expectedStatusCode int
 	}{
 		{
 			name: "Segment created",
-			inputBody: models.Segment{
-				Tag:         "NEW_TAG",
-				Description: "just new tag",
+			inputBody: &models.Segment{
+				Slug:        "NEW_SLUG",
+				Description: "just new slug",
 			},
 			serviceReturn:      nil,
 			expectedStatusCode: http.StatusCreated,
 		},
 		{
-			name: "Duplicate tag",
-			inputBody: models.Segment{
-				Tag:         "NEW_TAG",
-				Description: "duplicate tag",
+			name: "Duplicate slug",
+			inputBody: &models.Segment{
+				Slug:        "NEW_SLUG",
+				Description: "duplicate slug",
 			},
 			serviceReturn:      errors.ErrDuplicateSegment,
 			expectedStatusCode: http.StatusOK,
 		},
 		{
-			name: "Invalid tag naming",
-			inputBody: models.Segment{
-				Tag: "NeW_TaG-1",
+			name: "Invalid slug naming",
+			inputBody: &models.Segment{
+				Slug: "NeW_SluG-1",
 			},
-			serviceReturn:      errors.ErrInvalidSegmentTag,
+			serviceReturn:      errors.ErrInvalidSegmentSlug,
 			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
-			name: "Empty tag",
-			inputBody: models.Segment{
-				Tag: "",
+			name: "Empty slug",
+			inputBody: &models.Segment{
+				Slug: "",
 			},
-			serviceReturn:      errors.ErrInvalidSegmentTag,
+			serviceReturn:      errors.ErrInvalidSegmentSlug,
 			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
 			name: "Some internal error",
-			inputBody: models.Segment{
-				Tag: "NeW_TaG-1",
+			inputBody: &models.Segment{
+				Slug: "NeW_SLug-1",
 			},
 			serviceReturn:      os.ErrInvalid,
 			expectedStatusCode: http.StatusInternalServerError,
@@ -74,7 +74,7 @@ func TestHandlers_SegmentAdd(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			data, _ := json.Marshal(tc.inputBody)
+			data, _ := easyjson.Marshal(tc.inputBody)
 
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
@@ -111,37 +111,37 @@ func TestHandlers_SegmentDelete(t *testing.T) {
 	}{
 		{
 			name:               "Segment created",
-			input:              "NEW_TAG",
+			input:              "NEW_SLUG",
 			serviceReturn:      nil,
 			expectedStatusCode: http.StatusOK,
 		},
 		{
-			name:               "Invalid tag naming",
-			input:              "NeW_TaG-1",
-			serviceReturn:      errors.ErrInvalidSegmentTag,
+			name:               "Invalid slug naming",
+			input:              "NeW_SLug-1",
+			serviceReturn:      errors.ErrInvalidSegmentSlug,
 			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
-			name:               "Empty tag",
+			name:               "Empty slug",
 			input:              "",
-			serviceReturn:      errors.ErrInvalidSegmentTag,
+			serviceReturn:      errors.ErrInvalidSegmentSlug,
 			expectedStatusCode: http.StatusBadRequest,
 		},
 		{
 			name:               "Segment not found",
-			input:              "OLD_TAG",
-			serviceReturn:      errors.ErrNotFound,
+			input:              "OLD_SLUG",
+			serviceReturn:      errors.ErrSegmentNotFound,
 			expectedStatusCode: http.StatusNotFound,
 		},
 		{
 			name:               "Segment has been deleted",
-			input:              "NEW_TAG",
+			input:              "NEW_SLUG",
 			serviceReturn:      errors.ErrAlreadyDeleted,
 			expectedStatusCode: http.StatusGone,
 		},
 		{
 			name:               "Some internal error",
-			input:              "NeW_TaG-1",
+			input:              "NeW_SLug-1",
 			serviceReturn:      os.ErrInvalid,
 			expectedStatusCode: http.StatusInternalServerError,
 		},
@@ -163,8 +163,8 @@ func TestHandlers_SegmentDelete(t *testing.T) {
 
 			e := echo.New()
 			c := e.NewContext(req, rec)
-			c.SetPath("/api/v1/segment/:tag")
-			c.SetParamNames("tag")
+			c.SetPath("/api/v1/segment/:slug")
+			c.SetParamNames("slug")
 			c.SetParamValues(tc.input)
 
 			err := server.SegmentDelete(c)

@@ -38,6 +38,10 @@ func New(lc fx.Lifecycle, config *config.Config, logger *zap.Logger) *Repository
 	var (
 		schema []byte
 		pool   *pgxpool.Pool
+		repo   = &Repository{
+			pool:   pool,
+			logger: logger,
+		}
 	)
 
 	lc.Append(fx.Hook{
@@ -60,6 +64,8 @@ func New(lc fx.Lifecycle, config *config.Config, logger *zap.Logger) *Repository
 				return err
 			}
 
+			repo.pool = pool
+
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
@@ -68,8 +74,5 @@ func New(lc fx.Lifecycle, config *config.Config, logger *zap.Logger) *Repository
 		},
 	})
 
-	return &Repository{
-		pool:   pool,
-		logger: logger,
-	}
+	return repo
 }

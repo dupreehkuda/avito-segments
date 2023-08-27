@@ -5,7 +5,8 @@
 ---
 erDiagram
     segments {
-        text tag PK
+        text slug PK
+        text description
         timestamptz created_at
         timestamptz deleted_at
     }
@@ -16,7 +17,7 @@ erDiagram
     }
 
     user_segments {
-        text tag PK, FK
+        text slug PK, FK
         text user_id PK, FK
         timestamptz created_at
         timestamptz expired_at

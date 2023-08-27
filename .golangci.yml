@@ -6,7 +6,7 @@ run:
 linters-settings:
   cyclop:
     max-complexity: 20
-    package-average: 5.0
+    package-average: 7.0
 
   errcheck:
     check-type-assertions: true

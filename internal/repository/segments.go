@@ -2,7 +2,9 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"time"
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
@@ -11,7 +13,7 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
-func (r *Repository) SegmentAdd(ctx context.Context, segment models.Segment) error {
+func (r *Repository) SegmentAdd(ctx context.Context, segment *models.Segment) error {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -19,8 +21,8 @@ func (r *Repository) SegmentAdd(ctx context.Context, segment models.Segment) err
 	}
 	defer conn.Release()
 
-	queryString, queryArgs := sq.Insert("segments").Columns("tag", "description", "created_at").
-		Values(segment.Tag, segment.Description, segment.DeletedAt).
+	queryString, queryArgs := sq.Insert("segments").Columns("slug", "description", "created_at").
+		Values(segment.Slug, segment.Description, time.Now()).
 		PlaceholderFormat(sq.Dollar).
 		MustSql()
 
@@ -31,7 +33,7 @@ func (r *Repository) SegmentAdd(ctx context.Context, segment models.Segment) err
 	return nil
 }
 
-func (r *Repository) SegmentDelete(ctx context.Context, tag string) error {
+func (r *Repository) SegmentDelete(ctx context.Context, slug string) error {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -41,7 +43,7 @@ func (r *Repository) SegmentDelete(ctx context.Context, tag string) error {
 
 	queryString, queryArgs := sq.Update("segments").
 		Set("deleted_at", sq.Expr("NOW()")).
-		Where(sq.Eq{"tag": tag}).
+		Where(sq.Eq{"slug": slug}).
 		PlaceholderFormat(sq.Dollar).
 		MustSql()
 
@@ -52,7 +54,7 @@ func (r *Repository) SegmentDelete(ctx context.Context, tag string) error {
 	return nil
 }
 
-func (r *Repository) SegmentGet(ctx context.Context, tag string) (*models.Segment, error) {
+func (r *Repository) SegmentGet(ctx context.Context, slug string) (*models.Segment, error) {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -61,15 +63,16 @@ func (r *Repository) SegmentGet(ctx context.Context, tag string) (*models.Segmen
 	defer conn.Release()
 
 	res := &models.Segment{}
+	var deletedAt sql.NullTime
 
-	queryString, queryArgs := sq.Select("tag", "description", "deleted_at").
+	queryString, queryArgs := sq.Select("slug", "description", "deleted_at").
 		From("segments").
-		Where(sq.Eq{"tag": tag}).
+		Where(sq.Eq{"slug": slug}).
 		PlaceholderFormat(sq.Dollar).
 		MustSql()
 
 	err = conn.QueryRow(ctx, queryString, queryArgs...).
-		Scan(&res.Tag, &res.Description, &res.DeletedAt)
+		Scan(&res.Slug, &res.Description, &deletedAt)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -79,5 +82,33 @@ func (r *Repository) SegmentGet(ctx context.Context, tag string) (*models.Segmen
 		return nil, err
 	}
 
+	res.DeletedAt = deletedAt.Time
+
 	return res, nil
+}
+
+func (r *Repository) SegmentCount(ctx context.Context, slugs []string) (int, error) {
+	conn, err := r.pool.Acquire(ctx)
+	if err != nil {
+		r.logger.Error("Error while acquiring connection", zap.Error(err))
+		return 0, err
+	}
+	defer conn.Release()
+
+	var count int
+
+	queryString, queryArgs := sq.Select("COUNT(*)").
+		From("segments").
+		Where(sq.Eq{"slug": slugs}).
+		PlaceholderFormat(sq.Dollar).
+		MustSql()
+
+	err = conn.QueryRow(ctx, queryString, queryArgs...).
+		Scan(&count)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }

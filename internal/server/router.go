@@ -9,6 +9,10 @@ import (
 type Handlers interface {
 	SegmentAdd(c echo.Context) error
 	SegmentDelete(c echo.Context) error
+
+	UserSetSegments(c echo.Context) error
+	UserDeleteSegments(c echo.Context) error
+	UserGetSegments(c echo.Context) error
 }
 
 func (a *API) handler(logger *zap.Logger) *echo.Echo {
@@ -40,13 +44,13 @@ func (a *API) handler(logger *zap.Logger) *echo.Echo {
 	segment := v1.Group("/segment")
 
 	segment.POST("", a.handlers.SegmentAdd)
-	segment.DELETE("/:tag", a.handlers.SegmentDelete)
+	segment.DELETE("/:slug", a.handlers.SegmentDelete)
 
 	user := v1.Group("/user")
 
-	user.GET("/", nil)
-	user.POST("/", nil)
-	user.DELETE("/", nil)
+	user.GET("/:id", a.handlers.UserGetSegments)
+	user.POST("", a.handlers.UserSetSegments)
+	user.DELETE("", a.handlers.UserDeleteSegments)
 
 	return e
 }

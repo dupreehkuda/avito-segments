@@ -20,7 +20,7 @@ func TestService_SegmentAdd(t *testing.T) {
 
 	testCases := []struct {
 		name             string
-		inputBody        models.Segment
+		inputBody        *models.Segment
 		getSegmentReturn *models.Segment
 		getSegmentError  error
 		repositoryReturn error
@@ -30,9 +30,9 @@ func TestService_SegmentAdd(t *testing.T) {
 	}{
 		{
 			name: "Segment created",
-			inputBody: models.Segment{
-				Tag:         "NEW_TAG",
-				Description: "just new tag",
+			inputBody: &models.Segment{
+				Slug:        "NEW_SLUG",
+				Description: "just new slug",
 			},
 			getSegmentReturn: nil,
 			getSegmentError:  nil,
@@ -42,39 +42,39 @@ func TestService_SegmentAdd(t *testing.T) {
 			expectingAdd:     true,
 		},
 		{
-			name: "Invalid tag",
-			inputBody: models.Segment{
-				Tag: "NeW-tAg",
+			name: "Invalid slug",
+			inputBody: &models.Segment{
+				Slug: "NeW-slUg",
 			},
 			getSegmentReturn: nil,
 			getSegmentError:  nil,
 			repositoryReturn: nil,
-			expectedReturn:   errors.ErrInvalidSegmentTag,
+			expectedReturn:   errors.ErrInvalidSegmentSlug,
 			expectingGet:     false,
 			expectingAdd:     false,
 		},
 		{
-			name: "Empty tag",
-			inputBody: models.Segment{
-				Tag: "",
+			name: "Empty slug",
+			inputBody: &models.Segment{
+				Slug: "",
 			},
 			getSegmentReturn: nil,
 			getSegmentError:  nil,
 			repositoryReturn: nil,
-			expectedReturn:   errors.ErrInvalidSegmentTag,
+			expectedReturn:   errors.ErrInvalidSegmentSlug,
 			expectingGet:     false,
 			expectingAdd:     false,
 		},
 		{
 			name: "Duplicate entry",
-			inputBody: models.Segment{
-				Tag:         "NEW_TAG",
-				Description: "just new tag",
+			inputBody: &models.Segment{
+				Slug:        "NEW_SLUG",
+				Description: "just new slug",
 			},
 			getSegmentReturn: &models.Segment{
-				Tag:         "OLD_TAG",
-				Description: "just old tag",
-				DeletedAt:   nil,
+				Slug:        "OLD_SLUG",
+				Description: "just old slug",
+				DeletedAt:   time.Time{},
 			},
 			getSegmentError:  nil,
 			repositoryReturn: nil,
@@ -84,9 +84,9 @@ func TestService_SegmentAdd(t *testing.T) {
 		},
 		{
 			name: "DB error checkDuplicate",
-			inputBody: models.Segment{
-				Tag:         "NEW_TAG",
-				Description: "just new tag",
+			inputBody: &models.Segment{
+				Slug:        "NEW_SLUG",
+				Description: "just new slug",
 			},
 			getSegmentReturn: nil,
 			getSegmentError:  pgx.ErrTxCommitRollback,
@@ -97,9 +97,9 @@ func TestService_SegmentAdd(t *testing.T) {
 		},
 		{
 			name: "DB error addSegment",
-			inputBody: models.Segment{
-				Tag:         "NEW_TAG",
-				Description: "just new tag",
+			inputBody: &models.Segment{
+				Slug:        "NEW_SLUG",
+				Description: "just new slug",
 			},
 			getSegmentReturn: nil,
 			getSegmentError:  nil,
@@ -118,7 +118,7 @@ func TestService_SegmentAdd(t *testing.T) {
 			repo := NewMockRepository(ctrl)
 
 			if tc.expectingGet {
-				repo.EXPECT().SegmentGet(context.Background(), tc.inputBody.Tag).Return(tc.getSegmentReturn, tc.getSegmentError)
+				repo.EXPECT().SegmentGet(context.Background(), tc.inputBody.Slug).Return(tc.getSegmentReturn, tc.getSegmentError)
 			}
 
 			if tc.expectingAdd {
@@ -150,11 +150,11 @@ func TestService_SegmentDelete(t *testing.T) {
 	}{
 		{
 			name:  "Segment deleted",
-			input: "NEW_TAG",
+			input: "NEW_SLUG",
 			getSegmentReturn: &models.Segment{
-				Tag:         "NEW_TAG",
-				Description: "just new tag",
-				DeletedAt:   nil,
+				Slug:        "NEW_SLUG",
+				Description: "just new slug",
+				DeletedAt:   time.Time{},
 			},
 			getSegmentError:  nil,
 			repositoryReturn: nil,
@@ -164,21 +164,21 @@ func TestService_SegmentDelete(t *testing.T) {
 		},
 		{
 			name:             "Segment not found",
-			input:            "NEW_TAG",
+			input:            "NEW_SLUG",
 			getSegmentReturn: nil,
 			getSegmentError:  nil,
 			repositoryReturn: nil,
-			expectedReturn:   errors.ErrNotFound,
+			expectedReturn:   errors.ErrSegmentNotFound,
 			expectingGet:     true,
 			expectingDelete:  false,
 		},
 		{
 			name:  "Segment already deleted",
-			input: "NEW_TAG",
+			input: "NEW_SLUG",
 			getSegmentReturn: &models.Segment{
-				Tag:         "NEW_TAG",
-				Description: "just new tag",
-				DeletedAt:   &time.Time{},
+				Slug:        "NEW_SLUG",
+				Description: "just new slug",
+				DeletedAt:   time.Date(2022, time.August, 26, 19, 00, 00, 00, time.Local),
 			},
 			getSegmentError:  nil,
 			repositoryReturn: nil,
@@ -187,28 +187,28 @@ func TestService_SegmentDelete(t *testing.T) {
 			expectingDelete:  false,
 		},
 		{
-			name:             "Invalid tag",
-			input:            "NeW-tAg",
+			name:             "Invalid slug",
+			input:            "NeW-SLug",
 			getSegmentReturn: nil,
 			getSegmentError:  nil,
 			repositoryReturn: nil,
-			expectedReturn:   errors.ErrInvalidSegmentTag,
+			expectedReturn:   errors.ErrInvalidSegmentSlug,
 			expectingGet:     false,
 			expectingDelete:  false,
 		},
 		{
-			name:             "Empty tag",
+			name:             "Empty slug",
 			input:            "",
 			getSegmentReturn: nil,
 			getSegmentError:  nil,
 			repositoryReturn: nil,
-			expectedReturn:   errors.ErrInvalidSegmentTag,
+			expectedReturn:   errors.ErrInvalidSegmentSlug,
 			expectingGet:     false,
 			expectingDelete:  false,
 		},
 		{
 			name:             "DB error checkDuplicate",
-			input:            "NEW_TAG",
+			input:            "NEW_SLUG",
 			getSegmentReturn: nil,
 			getSegmentError:  pgx.ErrTxCommitRollback,
 			repositoryReturn: nil,
@@ -218,11 +218,11 @@ func TestService_SegmentDelete(t *testing.T) {
 		},
 		{
 			name:  "DB error addSegment",
-			input: "NEW_TAG",
+			input: "NEW_SLUG",
 			getSegmentReturn: &models.Segment{
-				Tag:         "NEW_TAG",
-				Description: "just new tag",
-				DeletedAt:   nil,
+				Slug:        "NEW_SLUG",
+				Description: "just new slug",
+				DeletedAt:   time.Time{},
 			},
 			getSegmentError:  nil,
 			repositoryReturn: pgx.ErrTxClosed,
@@ -257,44 +257,77 @@ func TestService_SegmentDelete(t *testing.T) {
 	}
 }
 
-func Test_isValidTag(t *testing.T) {
+func TestIsValidSlug(t *testing.T) {
 	a := assert.New(t)
 
 	tests := []struct {
 		name string
-		tag  string
+		slug string
 		want bool
 	}{
 		{
 			name: "Valid string w/out numbers",
-			tag:  "AVITO_PERFORMANCE_VAS",
+			slug: "AVITO_PERFORMANCE_VAS",
 			want: true,
 		},
 		{
 			name: "Valid string w/ numbers",
-			tag:  "AVITO_DISCOUNT_50",
+			slug: "AVITO_DISCOUNT_50",
 			want: true,
 		},
 		{
 			name: "Invalid w/ dashes",
-			tag:  "AVITO-PERFORMANCE-VAS",
+			slug: "AVITO-PERFORMANCE-VAS",
 			want: false,
 		},
 		{
 			name: "Invalid w/ other chars",
-			tag:  "reAl-tEst$thO_",
+			slug: "reAl-tEst$thO_",
 			want: false,
 		},
 		{
 			name: "Empty string",
-			tag:  "",
+			slug: "",
 			want: false,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			a.Equal(tc.want, service.IsValidTag(tc.tag))
+			a.Equal(tc.want, service.IsValidSlug(tc.slug))
+		})
+	}
+}
+
+func TestIsValidSegment(t *testing.T) {
+	a := assert.New(t)
+
+	tests := []struct {
+		name    string
+		segment models.UserSegment
+		want    error
+	}{
+		{
+			name: "Valid date",
+			segment: models.UserSegment{
+				Slug:   "AVITO_PERFORMANCE_VAS",
+				Expire: time.Date(2024, time.August, 26, 19, 00, 00, 00, time.Local),
+			},
+			want: nil,
+		},
+		{
+			name: "Past date",
+			segment: models.UserSegment{
+				Slug:   "AVITO_PERFORMANCE_VAS",
+				Expire: time.Date(2022, time.August, 26, 19, 00, 00, 00, time.Local),
+			},
+			want: errors.ErrAlreadyExpired,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			a.Equal(tc.want, service.IsValidSegment(tc.segment))
 		})
 	}
 }

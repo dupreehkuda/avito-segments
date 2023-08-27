@@ -19,22 +19,23 @@ func (h Handlers) SegmentAdd(c echo.Context) error {
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		h.logger.Error("Unable to read body", zap.Error(err))
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal Server Error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal Server Error")
 	}
 
 	err = easyjson.Unmarshal(body, &req)
 	if err != nil {
 		h.logger.Error("Unable to decode JSON", zap.Error(err))
-		return echo.NewHTTPError(http.StatusInternalServerError, "Internal Server Error")
+		return echo.NewHTTPError(http.StatusInternalServerError, "internal Server Error")
 	}
 
-	if err = h.service.SegmentAdd(c.Request().Context(), req); err != nil {
+	if err = h.service.SegmentAdd(c.Request().Context(), &req); err != nil {
 		switch {
 		case errors.Is(err, errs.ErrDuplicateSegment):
 			return c.NoContent(http.StatusOK)
-		case errors.Is(err, errs.ErrInvalidSegmentTag):
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid tag naming")
+		case errors.Is(err, errs.ErrInvalidSegmentSlug):
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid slug naming")
 		default:
+			h.logger.Error("Error occurred setting segments", zap.Error(err))
 			return err
 		}
 	}
@@ -43,16 +44,16 @@ func (h Handlers) SegmentAdd(c echo.Context) error {
 }
 
 func (h Handlers) SegmentDelete(c echo.Context) error {
-	tag := c.Param("tag")
+	slug := c.Param("slug")
 
-	if err := h.service.SegmentDelete(c.Request().Context(), tag); err != nil {
+	if err := h.service.SegmentDelete(c.Request().Context(), slug); err != nil {
 		switch {
-		case errors.Is(err, errs.ErrNotFound):
-			return echo.NewHTTPError(http.StatusNotFound, "Tag not found")
+		case errors.Is(err, errs.ErrSegmentNotFound):
+			return echo.NewHTTPError(http.StatusNotFound, "slug not found")
 		case errors.Is(err, errs.ErrAlreadyDeleted):
-			return echo.NewHTTPError(http.StatusGone, "Tag has been already deleted")
-		case errors.Is(err, errs.ErrInvalidSegmentTag):
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid tag naming")
+			return echo.NewHTTPError(http.StatusGone, "slug has been already deleted")
+		case errors.Is(err, errs.ErrInvalidSegmentSlug):
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid slug naming")
 		default:
 			return err
 		}

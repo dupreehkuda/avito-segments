@@ -11,12 +11,13 @@ import (
 //go:generate mockgen -source=service.go -destination=mock_test.go -package=service_test
 
 type Repository interface {
-	SegmentAdd(ctx context.Context, segment models.Segment) error
-	SegmentDelete(ctx context.Context, tag string) error
-	SegmentGet(ctx context.Context, tag string) (*models.Segment, error)
+	SegmentAdd(ctx context.Context, segment *models.Segment) error
+	SegmentDelete(ctx context.Context, slug string) error
+	SegmentGet(ctx context.Context, slug string) (*models.Segment, error)
+	SegmentCount(ctx context.Context, slugs []string) (int, error)
 
-	UserSetSegments(ctx context.Context, segments models.UserRequest) error
-	UserDeleteSegments(ctx context.Context, userID string, segments []string) error
+	UserSetSegments(ctx context.Context, segments *models.UserSetRequest) error
+	UserDeleteSegments(ctx context.Context, segments *models.UserDeleteRequest) error
 	UserGetSegments(ctx context.Context, userID string) (*models.UserResponse, error)
 }
 

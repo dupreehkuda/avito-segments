@@ -2,15 +2,18 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
+	"github.com/jackc/pgx/v5"
 	"go.uber.org/zap"
 
+	errs "github.com/dupreehkuda/avito-segments/internal/errors"
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
-func (r *Repository) UserSetSegments(ctx context.Context, segments models.UserRequest) error {
+func (r *Repository) UserSetSegments(ctx context.Context, segments *models.UserSetRequest) error {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -19,12 +22,12 @@ func (r *Repository) UserSetSegments(ctx context.Context, segments models.UserRe
 	defer conn.Release()
 
 	query := sq.Insert("user_segments").
-		Columns("tag", "user_id", "created_at", "expired_at").
-		Suffix("ON CONFLICT DO UPDATE SET expired_at = excluded.expired_at").
+		Columns("slug", "user_id", "created_at", "expired_at").
+		Suffix("ON CONFLICT (slug, user_id) DO UPDATE SET expired_at = excluded.expired_at").
 		PlaceholderFormat(sq.Dollar)
 
 	for _, segment := range segments.Segments {
-		query.Values(segment.Tag, segments.ID, time.Now(), segment.Expire)
+		query = query.Values(segment.Slug, segments.UserID, time.Now(), segment.Expire)
 	}
 
 	queryString, queryArgs := query.MustSql()
@@ -37,7 +40,7 @@ func (r *Repository) UserSetSegments(ctx context.Context, segments models.UserRe
 	return nil
 }
 
-func (r *Repository) UserDeleteSegments(ctx context.Context, userID string, segments []string) error {
+func (r *Repository) UserDeleteSegments(ctx context.Context, segments *models.UserDeleteRequest) error {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -48,9 +51,10 @@ func (r *Repository) UserDeleteSegments(ctx context.Context, userID string, segm
 	queryString, queryArgs := sq.Update("user_segments").
 		Set("deleted_at", time.Now()).
 		Where(sq.Eq{
-			"user_id": userID,
-			"tag":     segments,
+			"user_id": segments.UserID,
+			"slug":    segments.Slugs,
 		}).
+		PlaceholderFormat(sq.Dollar).
 		MustSql()
 
 	_, err = conn.Exec(ctx, queryString, queryArgs...)
@@ -70,26 +74,35 @@ func (r *Repository) UserGetSegments(ctx context.Context, userID string) (*model
 	}
 	defer conn.Release()
 
-	queryString, queryArgs := sq.Select("user_segments.tag").
+	queryString, queryArgs := sq.Select("user_segments.slug").
 		From("user_segments").
-		Join("segments on segments.tag = user_segments.tag").
-		Where(sq.Eq{
-			"segments.deleted_at":      nil,
-			"user_segments.deleted_at": nil,
-			"user_segments.user_id":    userID,
-		}).
-		Suffix("AND user_segments.expired_at > now() OR user_segments.expired_at IS NULL").
+		Join("segments on segments.slug = user_segments.slug").
+		Where(
+			sq.Eq{
+				"segments.deleted_at":      nil,
+				"user_segments.deleted_at": nil,
+				"user_segments.user_id":    userID,
+			},
+			sq.LtOrEq{
+				"user_segments.expired_at": time.Now(),
+			},
+		).
+		PlaceholderFormat(sq.Dollar).
 		MustSql()
 
 	rows, err := conn.Query(ctx, queryString, queryArgs...)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, errs.ErrSegmentNotFound
+		}
+
 		r.logger.Error("Error while executing query", zap.Error(err))
 		return nil, err
 	}
 
 	resp := &models.UserResponse{
-		ID:       userID,
-		Segments: make([]string, 0),
+		UserID: userID,
+		Slugs:  make([]string, 0),
 	}
 
 	for rows.Next() {
@@ -101,7 +114,7 @@ func (r *Repository) UserGetSegments(ctx context.Context, userID string) (*model
 			return nil, err
 		}
 
-		resp.Segments = append(resp.Segments, slug)
+		resp.Slugs = append(resp.Slugs, slug)
 	}
 
 	return resp, nil

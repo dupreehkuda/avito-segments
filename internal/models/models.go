@@ -6,23 +6,28 @@ import "time"
 //easyjson:json
 type (
 	Segment struct {
-		Tag         string `json:"tag"`
+		Slug        string `json:"slug"`
 		Description string `json:"description,omitempty"`
-		DeletedAt   *time.Time
+		DeletedAt   time.Time
 	}
 
 	UserSegment struct {
-		Tag    string `json:"tag"`
-		Expire string `json:"expire,omitempty"`
+		Slug   string    `json:"slug"`
+		Expire time.Time `json:"expire,omitempty"`
 	}
 
-	UserRequest struct {
-		ID       string        `json:"id"`
+	UserSetRequest struct {
+		UserID   string        `json:"userID"`
 		Segments []UserSegment `json:"segments"`
 	}
 
+	UserDeleteRequest struct {
+		UserID string   `json:"userID"`
+		Slugs  []string `json:"slugs"`
+	}
+
 	UserResponse struct {
-		ID       string   `json:"id"`
-		Segments []string `json:"segments"`
+		UserID string   `json:"userID"`
+		Slugs  []string `json:"slugs"`
 	}
 )

@@ -4,22 +4,22 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS segments (
-                                        tag text PRIMARY KEY NOT NULL UNIQUE,
+                                        slug text PRIMARY KEY NOT NULL UNIQUE,
                                         description text,
                                         created_at timestamptz NOT NULL,
                                         deleted_at timestamptz
 );
 
 CREATE TABLE IF NOT EXISTS user_segments (
-                                             tag text,
+                                             slug text,
                                              user_id text,
                                              created_at timestamptz NOT NULL,
                                              expired_at timestamptz,
                                              deleted_at timestamptz,
-                                             PRIMARY KEY(tag, user_id)
+                                             PRIMARY KEY(slug, user_id)
 );
 
-ALTER TABLE user_segments ADD FOREIGN KEY (tag) REFERENCES segments (tag);
+ALTER TABLE user_segments ADD FOREIGN KEY (slug) REFERENCES segments (slug);
 ALTER TABLE user_segments ADD FOREIGN KEY (user_id) REFERENCES users (id);
 
 CREATE OR REPLACE  FUNCTION insert_user_if_not_exists() RETURNS TRIGGER AS $$

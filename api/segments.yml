@@ -14,9 +14,9 @@ servers:
     description: production
 tags:
   - name: segment
-    description: Operations about segment
+    description: Operations on segments
   - name: user
-    description: Operations about user
+    description: Operations on users
 paths:
   /segment:
     post:
@@ -35,7 +35,7 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /segment/{tag}:
+  /segment/{slug}:
     delete:
       tags:
         - segment
@@ -43,11 +43,11 @@ paths:
       description: Deletes existing segment
       parameters:
         - in: path
-          name: tag
+          name: slug
           schema:
             type: string
           required: true
-          description: Tag of segment to delete
+          description: Slug of segment to delete
       responses:
         '200':
           description: Segment deleted
@@ -75,8 +75,12 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/UsersSegmentsResponse'
+        '204':
+          description: No segments yet
         '400':
           $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
         '500':
           $ref: '#/components/responses/InternalServerError'
   /user:
@@ -117,10 +121,10 @@ components:
   schemas:
     Segment:
       required:
-        - tag
+        - slug
       type: object
       properties:
-        tag:
+        slug:
           type: string
           example: AVITO_VOICE_MESSAGES
         description:
@@ -134,7 +138,7 @@ components:
         id:
           type: string
           example: 0c496832-37a4-11ee-8bf7-0242c0a80002
-        segments:
+        slugs:
           type: array
           items:
             type: string
@@ -161,10 +165,10 @@ components:
         application/json:
           schema:
             required:
-              - tag
+              - slug
             type: object
             properties:
-              tag:
+              slug:
                 type: string
                 example: AVITO_VOICE_MESSAGES
     UserSegmentsRequest:
@@ -184,9 +188,9 @@ components:
                 items:
                   type: object
                   required:
-                    - tag
+                    - slug
                   properties:
-                    tag:
+                    slug:
                       type: string
                       example: AVITO_VOICE_MESSAGES
                     expire:

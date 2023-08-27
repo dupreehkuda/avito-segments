@@ -36,7 +36,7 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // SegmentAdd mocks base method.
-func (m *MockService) SegmentAdd(ctx context.Context, segment models.Segment) error {
+func (m *MockService) SegmentAdd(ctx context.Context, segment *models.Segment) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SegmentAdd", ctx, segment)
 	ret0, _ := ret[0].(error)
@@ -50,15 +50,58 @@ func (mr *MockServiceMockRecorder) SegmentAdd(ctx, segment interface{}) *gomock.
 }
 
 // SegmentDelete mocks base method.
-func (m *MockService) SegmentDelete(ctx context.Context, tag string) error {
+func (m *MockService) SegmentDelete(ctx context.Context, slug string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SegmentDelete", ctx, tag)
+	ret := m.ctrl.Call(m, "SegmentDelete", ctx, slug)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SegmentDelete indicates an expected call of SegmentDelete.
-func (mr *MockServiceMockRecorder) SegmentDelete(ctx, tag interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SegmentDelete(ctx, slug interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SegmentDelete", reflect.TypeOf((*MockService)(nil).SegmentDelete), ctx, tag)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SegmentDelete", reflect.TypeOf((*MockService)(nil).SegmentDelete), ctx, slug)
+}
+
+// UserDeleteSegments mocks base method.
+func (m *MockService) UserDeleteSegments(ctx context.Context, segments *models.UserDeleteRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UserDeleteSegments", ctx, segments)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UserDeleteSegments indicates an expected call of UserDeleteSegments.
+func (mr *MockServiceMockRecorder) UserDeleteSegments(ctx, segments interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserDeleteSegments", reflect.TypeOf((*MockService)(nil).UserDeleteSegments), ctx, segments)
+}
+
+// UserGetSegments mocks base method.
+func (m *MockService) UserGetSegments(ctx context.Context, userID string) (*models.UserResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UserGetSegments", ctx, userID)
+	ret0, _ := ret[0].(*models.UserResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UserGetSegments indicates an expected call of UserGetSegments.
+func (mr *MockServiceMockRecorder) UserGetSegments(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserGetSegments", reflect.TypeOf((*MockService)(nil).UserGetSegments), ctx, userID)
+}
+
+// UserSetSegments mocks base method.
+func (m *MockService) UserSetSegments(ctx context.Context, segments *models.UserSetRequest) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UserSetSegments", ctx, segments)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UserSetSegments indicates an expected call of UserSetSegments.
+func (mr *MockServiceMockRecorder) UserSetSegments(ctx, segments interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UserSetSegments", reflect.TypeOf((*MockService)(nil).UserSetSegments), ctx, segments)
 }

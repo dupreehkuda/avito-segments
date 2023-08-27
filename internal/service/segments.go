@@ -8,12 +8,12 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
-func (s *Service) SegmentAdd(ctx context.Context, segment models.Segment) error {
-	if !IsValidTag(segment.Tag) {
-		return errors.ErrInvalidSegmentTag
+func (s *Service) SegmentAdd(ctx context.Context, segment *models.Segment) error {
+	if !IsValidSlug(segment.Slug) {
+		return errors.ErrInvalidSegmentSlug
 	}
 
-	seg, err := s.repository.SegmentGet(ctx, segment.Tag)
+	seg, err := s.repository.SegmentGet(ctx, segment.Slug)
 	if err != nil {
 		return err
 	}
@@ -30,25 +30,25 @@ func (s *Service) SegmentAdd(ctx context.Context, segment models.Segment) error 
 	return nil
 }
 
-func (s *Service) SegmentDelete(ctx context.Context, tag string) error {
-	if !IsValidTag(tag) {
-		return errors.ErrInvalidSegmentTag
+func (s *Service) SegmentDelete(ctx context.Context, slug string) error {
+	if !IsValidSlug(slug) {
+		return errors.ErrInvalidSegmentSlug
 	}
 
-	seg, err := s.repository.SegmentGet(ctx, tag)
+	seg, err := s.repository.SegmentGet(ctx, slug)
 	if err != nil {
 		return err
 	}
 
 	if seg == nil {
-		return errors.ErrNotFound
+		return errors.ErrSegmentNotFound
 	}
 
-	if seg.DeletedAt != nil {
+	if !seg.DeletedAt.IsZero() {
 		return errors.ErrAlreadyDeleted
 	}
 
-	err = s.repository.SegmentDelete(ctx, tag)
+	err = s.repository.SegmentDelete(ctx, slug)
 	if err != nil {
 		return err
 	}
@@ -56,8 +56,8 @@ func (s *Service) SegmentDelete(ctx context.Context, tag string) error {
 	return nil
 }
 
-func IsValidTag(tag string) bool {
+func IsValidSlug(slug string) bool {
 	pattern := "^[A-Z0-9_]+$"
 	regex := regexp.MustCompile(pattern)
-	return regex.MatchString(tag)
+	return regex.MatchString(slug)
 }
