@@ -120,6 +120,60 @@ func (r *Repository) GetSegments(ctx context.Context, userID string) (*models.Us
 	return resp, nil
 }
 
-func (r *Repository) GetPercent(ctx context.Context, percent float64) ([]string, error) {
-	return nil, nil
+func (r *Repository) GetReportData(ctx context.Context, year, month int) ([]models.ReportRow, error) {
+	conn, err := r.pool.Acquire(ctx)
+	if err != nil {
+		r.logger.Error("Error while acquiring connection", zap.Error(err))
+		return nil, err
+	}
+	defer conn.Release()
+
+	query := `
+		SELECT user_id, slug, 'added' as method, created_at AS timestamp
+		FROM user_segments
+		WHERE EXTRACT(YEAR FROM created_at) = $1
+		  AND EXTRACT(MONTH FROM created_at) = $2
+		
+		UNION
+		
+		SELECT user_id, slug, 'deleted', deleted_at AS timestamp
+		FROM user_segments
+		WHERE EXTRACT(YEAR FROM deleted_at) = $1
+		  AND EXTRACT(MONTH FROM deleted_at) = $2
+		
+		UNION
+		
+		SELECT user_id, slug, 'expired', expired_at AS timestamp
+		FROM user_segments
+		WHERE EXTRACT(YEAR FROM expired_at) = $1
+		  AND EXTRACT(MONTH FROM expired_at) = $2
+		
+		ORDER BY timestamp;
+	`
+
+	rows, err := conn.Query(ctx, query, year, month)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, errs.ErrDataNotFound
+		}
+
+		r.logger.Error("Error while executing query", zap.Error(err))
+		return nil, err
+	}
+
+	resp := make([]models.ReportRow, 0)
+
+	for rows.Next() {
+		var row models.ReportRow
+
+		err = rows.Scan(&row.UserID, &row.Slug, &row.Method, &row.Timestamp)
+		if err != nil {
+			r.logger.Error("Error while scanning query", zap.Error(err))
+			return nil, err
+		}
+
+		resp = append(resp, row)
+	}
+
+	return resp, nil
 }

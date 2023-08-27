@@ -49,19 +49,19 @@ func (mr *MockUserRepositoryMockRecorder) DeleteSegments(ctx, segments interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSegments", reflect.TypeOf((*MockUserRepository)(nil).DeleteSegments), ctx, segments)
 }
 
-// GetPercent mocks base method.
-func (m *MockUserRepository) GetPercent(ctx context.Context, percent float64) ([]string, error) {
+// GetReportData mocks base method.
+func (m *MockUserRepository) GetReportData(ctx context.Context, year, month int) ([]models.ReportRow, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPercent", ctx, percent)
-	ret0, _ := ret[0].([]string)
+	ret := m.ctrl.Call(m, "GetReportData", ctx, year, month)
+	ret0, _ := ret[0].([]models.ReportRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetPercent indicates an expected call of GetPercent.
-func (mr *MockUserRepositoryMockRecorder) GetPercent(ctx, percent interface{}) *gomock.Call {
+// GetReportData indicates an expected call of GetReportData.
+func (mr *MockUserRepositoryMockRecorder) GetReportData(ctx, year, month interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPercent", reflect.TypeOf((*MockUserRepository)(nil).GetPercent), ctx, percent)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetReportData", reflect.TypeOf((*MockUserRepository)(nil).GetReportData), ctx, year, month)
 }
 
 // GetSegments mocks base method.

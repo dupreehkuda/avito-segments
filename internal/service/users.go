@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+	"encoding/csv"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/dupreehkuda/avito-segments/internal/errors"
@@ -75,6 +78,51 @@ func (s *Service) UserGetSegments(ctx context.Context, userID string) (*models.U
 	}
 
 	return resp, nil
+}
+
+func (s *Service) CreateReport(ctx context.Context, year, month int) (string, error) {
+	if !IsValidReportTime(year, month) {
+		return "", errors.ErrInvalidPeriod
+	}
+
+	data, err := s.userRepo.GetReportData(ctx, year, month)
+	if err != nil {
+		return "", err
+	}
+
+	fileName := fmt.Sprintf("%v_%v_report.csv", month, year)
+
+	file, err := os.Create("reports/" + fileName)
+	if err != nil {
+		return "", fmt.Errorf("error creating CSV: %w", err)
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	for _, row := range data {
+		err = writer.Write([]string{row.UserID, row.Slug, row.Method, row.Timestamp.String()})
+		if err != nil {
+			return "", fmt.Errorf("error writing to CSV: %w", err)
+		}
+	}
+
+	return fileName, nil
+}
+
+func IsValidReportTime(year, month int) bool {
+	now := time.Now()
+
+	if year <= 1971 || year >= now.Year() {
+		return false
+	}
+
+	if month < 1 || month > 12 {
+		return false
+	}
+
+	return true
 }
 
 func IsValidSegment(segment models.UserSegment) error {

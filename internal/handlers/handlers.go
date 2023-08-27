@@ -14,6 +14,7 @@ import (
 type Service interface {
 	SegmentAdd(ctx context.Context, segment *models.Segment) error
 	SegmentDelete(ctx context.Context, slug string) error
+	CreateReport(ctx context.Context, year, month int) (string, error)
 
 	UserSetSegments(ctx context.Context, segments *models.UserSetRequest) error
 	UserDeleteSegments(ctx context.Context, segments *models.UserDeleteRequest) error

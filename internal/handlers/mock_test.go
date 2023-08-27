@@ -35,6 +35,21 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// CreateReport mocks base method.
+func (m *MockService) CreateReport(ctx context.Context, year, month int) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateReport", ctx, year, month)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateReport indicates an expected call of CreateReport.
+func (mr *MockServiceMockRecorder) CreateReport(ctx, year, month interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateReport", reflect.TypeOf((*MockService)(nil).CreateReport), ctx, year, month)
+}
+
 // SegmentAdd mocks base method.
 func (m *MockService) SegmentAdd(ctx context.Context, segment *models.Segment) error {
 	m.ctrl.T.Helper()

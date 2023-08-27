@@ -30,4 +30,20 @@ type (
 		UserID string   `json:"userID"`
 		Slugs  []string `json:"slugs"`
 	}
+
+	ReportRow struct {
+		UserID    string    `json:"userID"`
+		Slug      string    `json:"slug"`
+		Method    string    `json:"method"`
+		Timestamp time.Time `json:"timestamp"`
+	}
+
+	ReportRequest struct {
+		Year  int `json:"year"`
+		Month int `json:"month"`
+	}
+
+	ReportResponse struct {
+		Link string `json:"link"`
+	}
 )

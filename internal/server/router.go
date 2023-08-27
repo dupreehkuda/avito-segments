@@ -13,6 +13,9 @@ type Handlers interface {
 	UserSetSegments(c echo.Context) error
 	UserDeleteSegments(c echo.Context) error
 	UserGetSegments(c echo.Context) error
+
+	ReportCreate(c echo.Context) error
+	ReportGet(c echo.Context) error
 }
 
 func (a *API) handler(logger *zap.Logger) *echo.Echo {
@@ -51,6 +54,11 @@ func (a *API) handler(logger *zap.Logger) *echo.Echo {
 	user.GET("/:id", a.handlers.UserGetSegments)
 	user.POST("", a.handlers.UserSetSegments)
 	user.DELETE("", a.handlers.UserDeleteSegments)
+
+	report := v1.Group("/report")
+
+	report.GET("/:file", a.handlers.ReportGet)
+	report.POST("", a.handlers.ReportCreate)
 
 	return e
 }

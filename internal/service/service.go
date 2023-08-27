@@ -14,7 +14,8 @@ type UserRepository interface {
 	SetSegments(ctx context.Context, segments *models.UserSetRequest) error
 	DeleteSegments(ctx context.Context, segments *models.UserDeleteRequest) error
 	GetSegments(ctx context.Context, userID string) (*models.UserResponse, error)
-	GetPercent(ctx context.Context, percent float64) ([]string, error)
+
+	GetReportData(ctx context.Context, year, month int) ([]models.ReportRow, error)
 }
 
 type SegmentRepository interface {
