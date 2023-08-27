@@ -98,14 +98,15 @@ func TestService_UserGetSegments(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := NewMockRepository(ctrl)
+			userRepo := NewMockUserRepository(ctrl)
+			segmentRepo := NewMockSegmentRepository(ctrl)
 
 			if tc.expectingRepositoryCall {
-				repo.EXPECT().UserGetSegments(context.Background(), tc.inputBody).Return(tc.repositoryReturn, tc.repositoryError)
+				userRepo.EXPECT().GetSegments(context.Background(), tc.inputBody).Return(tc.repositoryReturn, tc.repositoryError)
 			}
 
 			zp, _ := zap.NewDevelopment()
-			serv := service.New(repo, zp)
+			serv := service.New(userRepo, segmentRepo, zp)
 
 			resp, err := serv.UserGetSegments(context.Background(), tc.inputBody)
 
@@ -275,18 +276,19 @@ func TestService_UserSetSegments(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := NewMockRepository(ctrl)
+			userRepo := NewMockUserRepository(ctrl)
+			segmentRepo := NewMockSegmentRepository(ctrl)
 
 			if tc.expectingGetCountCall {
-				repo.EXPECT().SegmentCount(context.Background(), tc.getCountInput).Return(tc.getCountReturn, tc.getCountError)
+				segmentRepo.EXPECT().Count(context.Background(), tc.getCountInput).Return(tc.getCountReturn, tc.getCountError)
 			}
 
 			if tc.expectingRepositoryCall {
-				repo.EXPECT().UserSetSegments(context.Background(), tc.inputBody).Return(tc.repositoryError)
+				userRepo.EXPECT().SetSegments(context.Background(), tc.inputBody).Return(tc.repositoryError)
 			}
 
 			zp, _ := zap.NewDevelopment()
-			serv := service.New(repo, zp)
+			serv := service.New(userRepo, segmentRepo, zp)
 
 			err := serv.UserSetSegments(context.Background(), tc.inputBody)
 
@@ -384,18 +386,19 @@ func TestService_UserDeleteSegments(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := NewMockRepository(ctrl)
+			userRepo := NewMockUserRepository(ctrl)
+			segmentRepo := NewMockSegmentRepository(ctrl)
 
 			if tc.expectingGetCountCall {
-				repo.EXPECT().SegmentCount(context.Background(), tc.inputBody.Slugs).Return(tc.getCountReturn, tc.getCountError)
+				segmentRepo.EXPECT().Count(context.Background(), tc.inputBody.Slugs).Return(tc.getCountReturn, tc.getCountError)
 			}
 
 			if tc.expectingRepositoryCall {
-				repo.EXPECT().UserDeleteSegments(context.Background(), tc.inputBody).Return(tc.repositoryError)
+				userRepo.EXPECT().DeleteSegments(context.Background(), tc.inputBody).Return(tc.repositoryError)
 			}
 
 			zp, _ := zap.NewDevelopment()
-			serv := service.New(repo, zp)
+			serv := service.New(userRepo, segmentRepo, zp)
 
 			err := serv.UserDeleteSegments(context.Background(), tc.inputBody)
 

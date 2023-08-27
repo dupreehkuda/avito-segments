@@ -10,27 +10,32 @@ import (
 
 //go:generate mockgen -source=service.go -destination=mock_test.go -package=service_test
 
-type Repository interface {
-	SegmentAdd(ctx context.Context, segment *models.Segment) error
-	SegmentDelete(ctx context.Context, slug string) error
-	SegmentGet(ctx context.Context, slug string) (*models.Segment, error)
-	SegmentCount(ctx context.Context, slugs []string) (int, error)
+type UserRepository interface {
+	SetSegments(ctx context.Context, segments *models.UserSetRequest) error
+	DeleteSegments(ctx context.Context, segments *models.UserDeleteRequest) error
+	GetSegments(ctx context.Context, userID string) (*models.UserResponse, error)
+	GetPercent(ctx context.Context, percent float64) ([]string, error)
+}
 
-	UserSetSegments(ctx context.Context, segments *models.UserSetRequest) error
-	UserDeleteSegments(ctx context.Context, segments *models.UserDeleteRequest) error
-	UserGetSegments(ctx context.Context, userID string) (*models.UserResponse, error)
+type SegmentRepository interface {
+	Add(ctx context.Context, segment *models.Segment) error
+	Delete(ctx context.Context, slug string) error
+	Get(ctx context.Context, slug string) (*models.Segment, error)
+	Count(ctx context.Context, slugs []string) (int, error)
 }
 
 // Service provides service's business-logic.
 type Service struct {
-	repository Repository
-	logger     *zap.Logger
+	userRepo    UserRepository
+	segmentRepo SegmentRepository
+	logger      *zap.Logger
 }
 
 // New creates new instance of service.
-func New(repository Repository, logger *zap.Logger) *Service {
+func New(userRepo UserRepository, segmentRepo SegmentRepository, logger *zap.Logger) *Service {
 	return &Service{
-		repository: repository,
-		logger:     logger,
+		userRepo:    userRepo,
+		segmentRepo: segmentRepo,
+		logger:      logger,
 	}
 }

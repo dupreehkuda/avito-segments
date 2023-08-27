@@ -13,7 +13,7 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
-func (r *Repository) SegmentAdd(ctx context.Context, segment *models.Segment) error {
+func (r *Repository) Add(ctx context.Context, segment *models.Segment) error {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -33,7 +33,7 @@ func (r *Repository) SegmentAdd(ctx context.Context, segment *models.Segment) er
 	return nil
 }
 
-func (r *Repository) SegmentDelete(ctx context.Context, slug string) error {
+func (r *Repository) Delete(ctx context.Context, slug string) error {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -54,7 +54,7 @@ func (r *Repository) SegmentDelete(ctx context.Context, slug string) error {
 	return nil
 }
 
-func (r *Repository) SegmentGet(ctx context.Context, slug string) (*models.Segment, error) {
+func (r *Repository) Get(ctx context.Context, slug string) (*models.Segment, error) {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -87,7 +87,7 @@ func (r *Repository) SegmentGet(ctx context.Context, slug string) (*models.Segme
 	return res, nil
 }
 
-func (r *Repository) SegmentCount(ctx context.Context, slugs []string) (int, error) {
+func (r *Repository) Count(ctx context.Context, slugs []string) (int, error) {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))

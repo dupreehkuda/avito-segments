@@ -13,7 +13,7 @@ func (s *Service) SegmentAdd(ctx context.Context, segment *models.Segment) error
 		return errors.ErrInvalidSegmentSlug
 	}
 
-	seg, err := s.repository.SegmentGet(ctx, segment.Slug)
+	seg, err := s.segmentRepo.Get(ctx, segment.Slug)
 	if err != nil {
 		return err
 	}
@@ -22,7 +22,7 @@ func (s *Service) SegmentAdd(ctx context.Context, segment *models.Segment) error
 		return errors.ErrDuplicateSegment
 	}
 
-	err = s.repository.SegmentAdd(ctx, segment)
+	err = s.segmentRepo.Add(ctx, segment)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (s *Service) SegmentDelete(ctx context.Context, slug string) error {
 		return errors.ErrInvalidSegmentSlug
 	}
 
-	seg, err := s.repository.SegmentGet(ctx, slug)
+	seg, err := s.segmentRepo.Get(ctx, slug)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (s *Service) SegmentDelete(ctx context.Context, slug string) error {
 		return errors.ErrAlreadyDeleted
 	}
 
-	err = s.repository.SegmentDelete(ctx, slug)
+	err = s.segmentRepo.Delete(ctx, slug)
 	if err != nil {
 		return err
 	}

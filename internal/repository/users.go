@@ -13,7 +13,7 @@ import (
 	"github.com/dupreehkuda/avito-segments/internal/models"
 )
 
-func (r *Repository) UserSetSegments(ctx context.Context, segments *models.UserSetRequest) error {
+func (r *Repository) SetSegments(ctx context.Context, segments *models.UserSetRequest) error {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -40,7 +40,7 @@ func (r *Repository) UserSetSegments(ctx context.Context, segments *models.UserS
 	return nil
 }
 
-func (r *Repository) UserDeleteSegments(ctx context.Context, segments *models.UserDeleteRequest) error {
+func (r *Repository) DeleteSegments(ctx context.Context, segments *models.UserDeleteRequest) error {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -66,7 +66,7 @@ func (r *Repository) UserDeleteSegments(ctx context.Context, segments *models.Us
 	return nil
 }
 
-func (r *Repository) UserGetSegments(ctx context.Context, userID string) (*models.UserResponse, error) {
+func (r *Repository) GetSegments(ctx context.Context, userID string) (*models.UserResponse, error) {
 	conn, err := r.pool.Acquire(ctx)
 	if err != nil {
 		r.logger.Error("Error while acquiring connection", zap.Error(err))
@@ -118,4 +118,8 @@ func (r *Repository) UserGetSegments(ctx context.Context, userID string) (*model
 	}
 
 	return resp, nil
+}
+
+func (r *Repository) GetPercent(ctx context.Context, percent float64) ([]string, error) {
+	return nil, nil
 }

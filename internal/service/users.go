@@ -19,7 +19,7 @@ func (s *Service) UserSetSegments(ctx context.Context, req *models.UserSetReques
 		slugs = append(slugs, segment.Slug)
 	}
 
-	count, err := s.repository.SegmentCount(ctx, slugs)
+	count, err := s.segmentRepo.Count(ctx, slugs)
 	if err != nil {
 		return err
 	}
@@ -28,7 +28,7 @@ func (s *Service) UserSetSegments(ctx context.Context, req *models.UserSetReques
 		return errors.ErrSegmentsNotFound
 	}
 
-	err = s.repository.UserSetSegments(ctx, req)
+	err = s.userRepo.SetSegments(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (s *Service) UserDeleteSegments(ctx context.Context, req *models.UserDelete
 		}
 	}
 
-	count, err := s.repository.SegmentCount(ctx, req.Slugs)
+	count, err := s.segmentRepo.Count(ctx, req.Slugs)
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func (s *Service) UserDeleteSegments(ctx context.Context, req *models.UserDelete
 		return errors.ErrSegmentsNotFound
 	}
 
-	err = s.repository.UserDeleteSegments(ctx, req)
+	err = s.userRepo.DeleteSegments(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (s *Service) UserDeleteSegments(ctx context.Context, req *models.UserDelete
 }
 
 func (s *Service) UserGetSegments(ctx context.Context, userID string) (*models.UserResponse, error) {
-	resp, err := s.repository.UserGetSegments(ctx, userID)
+	resp, err := s.userRepo.GetSegments(ctx, userID)
 	if err != nil {
 		return nil, err
 	}

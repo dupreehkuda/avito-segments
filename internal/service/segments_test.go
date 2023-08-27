@@ -115,18 +115,19 @@ func TestService_SegmentAdd(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := NewMockRepository(ctrl)
+			userRepo := NewMockUserRepository(ctrl)
+			segmentRepo := NewMockSegmentRepository(ctrl)
 
 			if tc.expectingGet {
-				repo.EXPECT().SegmentGet(context.Background(), tc.inputBody.Slug).Return(tc.getSegmentReturn, tc.getSegmentError)
+				segmentRepo.EXPECT().Get(context.Background(), tc.inputBody.Slug).Return(tc.getSegmentReturn, tc.getSegmentError)
 			}
 
 			if tc.expectingAdd {
-				repo.EXPECT().SegmentAdd(context.Background(), tc.inputBody).Return(tc.repositoryReturn)
+				segmentRepo.EXPECT().Add(context.Background(), tc.inputBody).Return(tc.repositoryReturn)
 			}
 
 			zp, _ := zap.NewDevelopment()
-			serv := service.New(repo, zp)
+			serv := service.New(userRepo, segmentRepo, zp)
 
 			err := serv.SegmentAdd(context.Background(), tc.inputBody)
 
@@ -237,18 +238,19 @@ func TestService_SegmentDelete(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			repo := NewMockRepository(ctrl)
+			userRepo := NewMockUserRepository(ctrl)
+			segmentRepo := NewMockSegmentRepository(ctrl)
 
 			if tc.expectingGet {
-				repo.EXPECT().SegmentGet(context.Background(), tc.input).Return(tc.getSegmentReturn, tc.getSegmentError)
+				segmentRepo.EXPECT().Get(context.Background(), tc.input).Return(tc.getSegmentReturn, tc.getSegmentError)
 			}
 
 			if tc.expectingDelete {
-				repo.EXPECT().SegmentDelete(context.Background(), tc.input).Return(tc.repositoryReturn)
+				segmentRepo.EXPECT().Delete(context.Background(), tc.input).Return(tc.repositoryReturn)
 			}
 
 			zp, _ := zap.NewDevelopment()
-			serv := service.New(repo, zp)
+			serv := service.New(userRepo, segmentRepo, zp)
 
 			err := serv.SegmentDelete(context.Background(), tc.input)
 

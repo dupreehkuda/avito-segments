@@ -22,7 +22,8 @@ func main() {
 		fx.Provide(logger.New),
 		fx.Provide(fx.Annotate(
 			repository.New,
-			fx.As(new(service.Repository)),
+			fx.As(new(service.UserRepository)),
+			fx.As(new(service.SegmentRepository)),
 		)),
 		fx.Provide(fx.Annotate(
 			service.New,
