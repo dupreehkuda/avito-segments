@@ -21,13 +21,13 @@ func (h Handlers) ReportCreate(c echo.Context) error {
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		h.logger.Error("Unable to read body", zap.Error(err))
-		return echo.NewHTTPError(http.StatusInternalServerError, "internal Server Error")
+		return h.ErrorHandler(err)
 	}
 
 	err = easyjson.Unmarshal(body, &req)
 	if err != nil {
 		h.logger.Error("Unable to decode JSON", zap.Error(err))
-		return echo.NewHTTPError(http.StatusInternalServerError, "internal Server Error")
+		return h.ErrorHandler(err)
 	}
 
 	potentialFileName := fmt.Sprintf("%v_%v_report.csv", req.Month, req.Year)
@@ -37,15 +37,7 @@ func (h Handlers) ReportCreate(c echo.Context) error {
 
 	fileName, err := h.service.CreateReport(c.Request().Context(), req.Year, req.Month)
 	if err != nil {
-		switch {
-		case errors.Is(err, errs.ErrInvalidPeriod):
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid time period provided")
-		case errors.Is(err, errs.ErrDataNotFound):
-			return echo.NewHTTPError(http.StatusNotFound, "no data for report")
-		default:
-			h.logger.Error("Error occurred creating report", zap.Error(err))
-			return err
-		}
+		return h.ErrorHandler(err)
 	}
 
 	resp := models.ReportResponse{Link: c.Request().Host + "/api/v1/report/" + fileName}
@@ -57,7 +49,7 @@ func (h Handlers) ReportGet(c echo.Context) error {
 	file := c.Param("file")
 
 	if _, err := os.Stat("reports/" + file); errors.Is(err, os.ErrNotExist) {
-		return echo.NewHTTPError(http.StatusBadRequest, "report doesn't exist")
+		return h.ErrorHandler(errs.ErrReportNotFound)
 	}
 
 	c.Response().Header().Set("Content-Type", "text/csv")

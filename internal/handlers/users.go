@@ -20,35 +20,25 @@ func (h Handlers) UserSetSegments(c echo.Context) error {
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		h.logger.Error("Unable to read body", zap.Error(err))
-		return echo.NewHTTPError(http.StatusInternalServerError, "internal Server Error")
+		return h.ErrorHandler(err)
 	}
 
 	err = easyjson.Unmarshal(body, &req)
 	if err != nil {
 		h.logger.Error("Unable to decode JSON", zap.Error(err))
-		return echo.NewHTTPError(http.StatusInternalServerError, "internal Server Error")
+		return h.ErrorHandler(err)
 	}
 
 	if err = UUIDCheck(req.UserID); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "userID should be a valid UUID")
+		return h.ErrorHandler(err)
 	}
 
 	if req.Segments == nil || len(req.Segments) == 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, "no segments provided")
+		return h.ErrorHandler(errs.ErrNoSegmentsProvided)
 	}
 
 	if err = h.service.UserSetSegments(c.Request().Context(), &req); err != nil {
-		switch {
-		case errors.Is(err, errs.ErrSegmentsNotFound):
-			return echo.NewHTTPError(http.StatusBadRequest, "segment(s) not found")
-		case errors.Is(err, errs.ErrAlreadyExpired):
-			return echo.NewHTTPError(http.StatusBadRequest, "segment operation expired")
-		case errors.Is(err, errs.ErrInvalidSegmentSlug):
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid slug naming")
-		default:
-			h.logger.Error("Error occurred setting segments", zap.Error(err))
-			return err
-		}
+		return h.ErrorHandler(err)
 	}
 
 	return c.NoContent(http.StatusOK)
@@ -60,31 +50,25 @@ func (h Handlers) UserDeleteSegments(c echo.Context) error {
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
 		h.logger.Error("Unable to read body", zap.Error(err))
-		return echo.NewHTTPError(http.StatusInternalServerError, "internal Server Error")
+		return h.ErrorHandler(err)
 	}
 
 	err = easyjson.Unmarshal(body, &req)
 	if err != nil {
 		h.logger.Error("Unable to decode JSON", zap.Error(err))
-		return echo.NewHTTPError(http.StatusInternalServerError, "internal Server Error")
+		return h.ErrorHandler(err)
 	}
 
 	if err = UUIDCheck(req.UserID); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "userID should be a valid UUID")
+		return h.ErrorHandler(err)
 	}
 
 	if req.Slugs == nil || len(req.Slugs) == 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, "no segments provided")
+		return h.ErrorHandler(errs.ErrNoSegmentsProvided)
 	}
 
 	if err = h.service.UserDeleteSegments(c.Request().Context(), &req); err != nil {
-		switch {
-		case errors.Is(err, errs.ErrInvalidSegmentSlug):
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid slug naming")
-		default:
-			h.logger.Error("Error occurred deleting segments", zap.Error(err))
-			return err
-		}
+		return h.ErrorHandler(err)
 	}
 
 	return c.NoContent(http.StatusOK)
@@ -94,20 +78,16 @@ func (h Handlers) UserGetSegments(c echo.Context) error {
 	id := c.Param("id")
 
 	if err := UUIDCheck(id); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "userID should be a valid UUID")
+		return h.ErrorHandler(err)
 	}
 
 	resp, err := h.service.UserGetSegments(c.Request().Context(), id)
 	if err != nil {
-		switch {
-		case errors.Is(err, errs.ErrSegmentsNotFound):
+		if errors.Is(err, errs.ErrSegmentsNotFound) {
 			return c.NoContent(http.StatusNoContent)
-		case errors.Is(err, errs.ErrUserNotFound):
-			return echo.NewHTTPError(http.StatusNotFound, "user not found")
-		default:
-			h.logger.Error("Error occurred getting segments", zap.Error(err))
-			return err
 		}
+
+		return h.ErrorHandler(err)
 	}
 
 	return c.JSON(http.StatusOK, resp)
@@ -122,7 +102,7 @@ func UUIDCheck(uuids ...string) error {
 
 		_, err := uuid.Parse(id)
 		if err != nil {
-			return err
+			return errs.ErrInvalidUserID
 		}
 	}
 

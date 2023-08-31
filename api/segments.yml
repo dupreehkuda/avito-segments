@@ -10,13 +10,15 @@ info:
 servers:
   - url: 'http://localhost:8080/api/v1'
     description: local
-  - url: 'http://1145267-cv99614.tw1.ru/api/v1'
+  - url: 'http://avito.1145267-cv99614.tw1.ru/api/v1'
     description: production
 tags:
   - name: segment
-    description: Operations on segments
+    description: Operations with segments
   - name: user
-    description: Operations on users
+    description: Operations with users
+  - name: report
+    description: Operations with reports
 paths:
   /segment:
     post:
@@ -117,6 +119,47 @@ paths:
           $ref: '#/components/responses/BadRequestError'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /report/{filename}:
+    get:
+      tags:
+        - report
+      parameters:
+        - in: path
+          name: filename
+          schema:
+            type: string
+          required: true
+          description: filename of report
+      summary: Get formed report
+      description: Download previously formed report
+      responses:
+        '200':
+          $ref: '#/components/responses/MonthlyReportResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /report:
+    post:
+      tags:
+        - report
+      summary: Request monthly report
+      description: Request monthly report form and download link
+      requestBody:
+        description: Delete segments from user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Report'
+      responses:
+        '200':
+          description: Segments deleted
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     Segment:
@@ -143,6 +186,18 @@ components:
           items:
             type: string
           example: [AVITO_VOICE_MESSAGES, AVITO_DISCOUNT_30]
+    Report:
+      required:
+        - month
+        - year
+      type: object
+      properties:
+        month:
+          type: integer
+          example: 8
+        year:
+          type: integer
+          example: 2023
     Error:
       title: Error
       type: object
@@ -222,6 +277,18 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/User'
+    MonthlyReportResponse:
+      description: Get monthly report
+      content:
+        text/csv:
+          schema:
+            type: string
+    MonthlyReportRequest:
+      description: Request monthly report download link
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Report'
     InternalServerError:
       description: Internal Server Error
       content:
@@ -241,7 +308,25 @@ components:
           examples:
             example:
               value:
-                message: Not found
+                message: Bad Request
+            invalid period:
+              value:
+                message: invalid time period provided
+            invalid slug:
+              value:
+                message: invalid slug naming
+            invalid userID:
+              value:
+                message: invalid userID
+            no segments:
+              value:
+                message: no segments provided
+            no segments found:
+              value:
+                message: segment(s) not found
+            expired:
+              value:
+                message: segment operation expired
     BadRequestError:
       description: Bad Request Error
       content:
@@ -252,6 +337,18 @@ components:
             example:
               value:
                 message: Bad Request
+            no report:
+              value:
+                message: requested report not found
+            no data for report:
+              value:
+                message: no data for report
+            user not found:
+              value:
+                message: user not found
+            slug not found:
+              value:
+                message: slug not found
     GoneError:
       description: Gone Error
       content:
@@ -259,6 +356,6 @@ components:
           schema:
             $ref: '#/components/schemas/Error'
           examples:
-            example:
+            segment deleted:
               value:
-                message: Segment has been deleted
+                message: slug has been already deleted

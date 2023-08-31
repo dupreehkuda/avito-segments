@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.8"
 
 services:
   segment-service:
@@ -7,10 +7,10 @@ services:
     container_name: segment-service
     env_file: .env
     ports:
-      - '8080:8080'
+      - "8080:8080"
     restart: always
     volumes:
-      - .:/segment_service
+      - ./reports:/build/reports
     depends_on:
       segment-data:
         condition: service_started
